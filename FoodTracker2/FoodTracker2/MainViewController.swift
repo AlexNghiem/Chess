@@ -27,7 +27,22 @@ class MainViewController: UIViewController {
         } else {
             //print("debug: app was launched in portrait mode") //for debug
         }
+        let margins = view.layoutMarginsGuide
+
+        let rectangleFrame: CGRect = CGRect.zero
+        let rectangle: UITextView = UITextView(frame: rectangleFrame)
+        rectangle.backgroundColor = UIColor.black
+        rectangle.translatesAutoresizingMaskIntoConstraints = false
         
+        view.addSubview(rectangle)
+        
+        /*print(view.layoutMargins.left-view.layoutMargins.right)
+        //print(view.layoutMargins.right)
+        rectangle.leadingAnchor.constraint(equalTo: margins.leadingAnchor, constant: -10).isActive = true
+        rectangle.trailingAnchor.constraint(equalTo: margins.trailingAnchor).isActive = true
+        rectangle.topAnchor.constraint(equalTo: margins.topAnchor).isActive = true
+        rectangle.bottomAnchor.constraint(equalTo: margins.bottomAnchor).isActive = true*/
+
         //VV THIS IS THE CODE FOR A TEXT LABEL, JUST FOR REFERENCE VV
         /*
         //setting up the rectangle
@@ -58,7 +73,6 @@ class MainViewController: UIViewController {
          //^^ THIS IS THE CODE FOR A TEXT LABEL, JUST FOR REFERENCE ^^
         
         //LETS SET THIS UP RN.. I think that i only have to set this up once
-        let margins = view.layoutMarginsGuide
         
         let titleText: UILabel = UILabel(frame: CGRect.zero)
         titleText.backgroundColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
