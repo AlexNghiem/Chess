@@ -29,14 +29,14 @@ class MainViewController: UIViewController {
         }
         let margins = view.layoutMarginsGuide
 
-        let rectangleFrame: CGRect = CGRect.zero
+        /*let rectangleFrame: CGRect = CGRect.zero
         let rectangle: UITextView = UITextView(frame: rectangleFrame)
         rectangle.backgroundColor = UIColor.black
         rectangle.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(rectangle)
         
-        /*print(view.layoutMargins.left-view.layoutMargins.right)
+        print(view.layoutMargins.left-view.layoutMargins.right)
         //print(view.layoutMargins.right)
         rectangle.leadingAnchor.constraint(equalTo: margins.leadingAnchor, constant: -10).isActive = true
         rectangle.trailingAnchor.constraint(equalTo: margins.trailingAnchor).isActive = true

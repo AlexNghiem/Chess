@@ -10,19 +10,28 @@ import Foundation
 import UIKit
 
 class BoardViewController2: UIViewController {
+    
+    var margins: UILayoutGuide? = nil
+    var portraitHeight: CGFloat = 0.0
+    var portraitWidth: CGFloat = 0.0
+    var squareSize: CGFloat = 0.0
+    let selectedBox: UIButton = UIButton(frame: CGRect.zero)
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor.black
         
-        let margins = view.layoutMarginsGuide
-        var portraitHeight: CGFloat = view.bounds.height //this is the height in portrait mode... it will be updated if the app is launched in landscape mode (view.bounds.height gives the height IN the current orientation --> will be wrong initially if launched in landscape)
-        var portraitWidth: CGFloat = view.bounds.width //this is the width in portrait mode
+        margins = view.layoutMarginsGuide
+        portraitHeight = view.bounds.height //this is the height in portrait mode... it will be updated if the app is launched in landscape mode (view.bounds.height gives the height IN the current orientation --> will be wrong initially if launched in landscape)
+        portraitWidth = view.bounds.width //this is the width in portrait mode
         if UIApplication.shared.statusBarOrientation.isLandscape {
             //print("debug: app was launched in landscape mode") //for debug
             portraitHeight = view.bounds.width //this updates the values if necessary
             portraitWidth = view.bounds.height //this updates the values if necessary
         }
+        
+        squareSize = portraitWidth/10
         
         let backButton = UIButton(frame: CGRect.zero)
         backButton.translatesAutoresizingMaskIntoConstraints = false
@@ -34,9 +43,9 @@ class BoardViewController2: UIViewController {
         
         view.addSubview(backButton)
         
-        backButton.leadingAnchor.constraint(equalTo: margins.leadingAnchor, constant: portraitWidth/10).isActive = true
-        backButton.trailingAnchor.constraint(equalTo: margins.trailingAnchor, constant: -portraitWidth/10).isActive = true
-        backButton.topAnchor.constraint(equalTo: margins.bottomAnchor, constant: -portraitHeight/5).isActive = true
+        backButton.leadingAnchor.constraint(equalTo: margins!.leadingAnchor, constant: portraitWidth/10).isActive = true
+        backButton.trailingAnchor.constraint(equalTo: (margins?.trailingAnchor)!, constant: -portraitWidth/10).isActive = true
+        backButton.topAnchor.constraint(equalTo: (margins?.bottomAnchor)!, constant: -portraitHeight/5).isActive = true
         backButton.heightAnchor.constraint(equalToConstant: portraitHeight/10)
         
         backButton.addTarget(self, action: #selector(self.backButtonPushed(_:)), for: UIControlEvents.touchUpInside)
@@ -44,8 +53,16 @@ class BoardViewController2: UIViewController {
         //print("debug... portrait width is + /(portraitWidth)")
         //print("debug... portrait height is + /(portraitHeight)")
 
-        //let board: UIImage = UIImage(image: #imageLiteral(resourceName: "chessBoard.png"))
-        let squareSize = portraitWidth/10
+        let board: UIImageView = UIImageView(image: #imageLiteral(resourceName: "chessBoard.png"))
+        board.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(board)
+        
+        board.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -4*squareSize).isActive = true
+        board.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: (-4-2)*squareSize).isActive = true
+        board.heightAnchor.constraint(equalToConstant: squareSize*8).isActive = true
+        board.widthAnchor.constraint(equalToConstant: squareSize*8).isActive = true
+        
         /*let topLeftCornerTopCoordinate = portraitHeight/2 - squareSize*4 //will be centered
         let topLeftCornerLeadingCoordinate = portraitWidth/2 - squareSize*4 //will be centered*/
         /*let testImageView: UIImageView = UIImageView(image: #imageLiteral(resourceName: "defaultPhoto")) //instantiates the uiimageview object of a bishop
@@ -96,8 +113,8 @@ class BoardViewController2: UIViewController {
                 
                 view.addSubview(testPiece)
                 
-                testPiece.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: CGFloat(col-4)*squareSize).isActive = true
-                testPiece.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(row-4-2)*squareSize).isActive = true
+                testPiece.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: CGFloat(col-4)*squareSize).isActive = true
+                testPiece.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: CGFloat(row-4-2)*squareSize).isActive = true
                 testPiece.heightAnchor.constraint(equalToConstant: squareSize).isActive = true
                 testPiece.widthAnchor.constraint(equalToConstant: squareSize).isActive = true
                 
@@ -107,11 +124,13 @@ class BoardViewController2: UIViewController {
             }
             pieceArray.append(tempRow)
         }
-        
     }
     
     var pieceArray: [[UIButton?]] = [[UIButton?](repeating: nil, count: 8)]
-
+    var pieceIsSelected = false
+    var rowSelected = 0
+    var colSelected = 0
+    
     
     //MARK: Piece
     
@@ -133,12 +152,6 @@ class BoardViewController2: UIViewController {
         }
     }
     
-    //MARK: Chess Board Functions
-    /*func redrawBoard(pieces: [[UIButton?]]) {
-        for piece in pieces {
-            
-        }
-    }*/
     
     //MARK: Actions
     @IBAction func backButtonPushed(_ sender: UIButton) {
@@ -146,6 +159,7 @@ class BoardViewController2: UIViewController {
         performSegue(withIdentifier: "unwindToBoardViewController", sender: self)
     }
     
+    //MARK: Chess Board Functions
     //this method knows what square got clicked
     @IBAction func chessPiecePushed(_ sender: piece) {
         //print("debug... chess button pushed... action in chessPiecePushed is now being completed")
@@ -157,5 +171,38 @@ class BoardViewController2: UIViewController {
         else {
             sender.setBackgroundImage(#imageLiteral(resourceName: "KW"), for: UIControlState.normal)
         }
+        if (!pieceIsSelected) {
+            selectSquare(row: (sender).rowCoord, col: (sender).colCoord)
+        }
     }
+    
+    @IBAction func clear(_ sender: UIButton) {
+        print("clearing")
+        sender.isHidden = true
+        pieceIsSelected = false
+        //sender.removeConstraints(sender.constraints)
+        for constraint in sender.constraints {
+            sender.removeConstraint(constraint)
+        }
+    }
+    
+    func selectSquare(row: Int, col: Int) {
+        let selectedBox: UIButton = UIButton(frame: CGRect.zero)
+        selectedBox.backgroundColor = UIColor.yellow.withAlphaComponent(0.5)
+        selectedBox.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(selectedBox)
+        selectedBox.isHidden = true
+        print("selecting square")
+        selectedBox.isHidden = false
+        selectedBox.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: squareSize*CGFloat((col-4))).isActive = true
+        selectedBox.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: squareSize*CGFloat((row-4-2))).isActive = true
+        selectedBox.heightAnchor.constraint(equalToConstant: squareSize).isActive = true
+        selectedBox.widthAnchor.constraint(equalToConstant: squareSize).isActive = true
+        selectedBox.addTarget(self, action: #selector(self.clear(_:)), for: UIControlEvents.touchUpInside)
+        pieceIsSelected = true
+        rowSelected = row
+        colSelected = col
+    }
+    
+    
 }
