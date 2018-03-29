@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  Chess
 //
-//  Created by Alexander Nghiem on 2/2/18.
+//  Created by Alexander Nghiem on 3/29/18.
 //  Copyright © 2018 Alex, Justin, Eric. All rights reserved.
 //
 

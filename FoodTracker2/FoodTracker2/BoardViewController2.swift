@@ -181,9 +181,9 @@ class BoardViewController2: UIViewController {
         sender.isHidden = true
         pieceIsSelected = false
         //sender.removeConstraints(sender.constraints)
-        for constraint in sender.constraints {
+        /*for constraint in sender.constraints {
             sender.removeConstraint(constraint)
-        }
+        }*/
     }
     
     func selectSquare(row: Int, col: Int) {
@@ -192,7 +192,7 @@ class BoardViewController2: UIViewController {
         selectedBox.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(selectedBox)
         selectedBox.isHidden = true
-        print("selecting square")
+        print("selecting square " + String(row))
         selectedBox.isHidden = false
         selectedBox.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: squareSize*CGFloat((col-4))).isActive = true
         selectedBox.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: squareSize*CGFloat((row-4-2))).isActive = true
