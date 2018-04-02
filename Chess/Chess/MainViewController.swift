@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class MainViewController: UIViewController {
 
     //MARK: variable initialization
     var margins: UILayoutGuide? = nil
@@ -28,8 +28,6 @@ class ViewController: UIViewController {
             portraitWidth = view.bounds.height
         }
         
-        
-        
         //Title box
         let titleBox: UILabel = UILabel(frame: CGRect.zero)
         titleBox.translatesAutoresizingMaskIntoConstraints = false //this allows the later constraints to override the fact that the text view is initialized to a rectangle of size 0
@@ -44,7 +42,19 @@ class ViewController: UIViewController {
         titleBox.bottomAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + portraitHeight/10).isActive = true
 
         //Button
-        let playButton
+        let playButton: UIButton = UIButton(frame: CGRect.zero)
+        playButton.backgroundColor = UIColor.black
+        playButton.setTitle("play", for: UIControlState.normal)
+        playButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/12)
+        playButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(playButton)
+        
+        playButton.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4).isActive = true
+        playButton.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4).isActive = true
+        playButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!).isActive = true
+        playButton.heightAnchor.constraint(equalToConstant: portraitHeight/10)
+        playButton.addTarget(self, action: #selector(MainViewController.playButtonPushed(_:)), for: UIControlEvents.touchUpInside)
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,6 +62,14 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-
+    //MARK: Button Functions
+    @IBAction func playButtonPushed(_ sender: UIButton) {
+        let view: UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "BoardViewControllerID") as UIViewController
+        present(view, animated: true, completion: nil)
+    }
+    
+    @IBAction func unwindToMainViewController(segue: UIStoryboardSegue) {
+        
+    }
 }
 

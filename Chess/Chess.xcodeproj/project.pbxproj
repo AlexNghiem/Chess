@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		220AFA912072C5CA0091AA13 /* BoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220AFA902072C5CA0091AA13 /* BoardViewController.swift */; };
 		22C6FD28206D3CBC000534DE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C6FD27206D3CBC000534DE /* AppDelegate.swift */; };
 		22C6FD2A206D3CBC000534DE /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C6FD29206D3CBC000534DE /* MainViewController.swift */; };
 		22C6FD2D206D3CBC000534DE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22C6FD2B206D3CBC000534DE /* Main.storyboard */; };
@@ -26,6 +27,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		220AFA902072C5CA0091AA13 /* BoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewController.swift; sourceTree = "<group>"; };
 		22C6FD24206D3CBC000534DE /* Chess.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chess.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22C6FD27206D3CBC000534DE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		22C6FD29206D3CBC000534DE /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 			children = (
 				22C6FD27206D3CBC000534DE /* AppDelegate.swift */,
 				22C6FD29206D3CBC000534DE /* MainViewController.swift */,
+				220AFA902072C5CA0091AA13 /* BoardViewController.swift */,
 				22C6FD2B206D3CBC000534DE /* Main.storyboard */,
 				22C6FD2E206D3CBC000534DE /* Assets.xcassets */,
 				22C6FD30206D3CBC000534DE /* LaunchScreen.storyboard */,
@@ -201,6 +204,7 @@
 			files = (
 				22C6FD2A206D3CBC000534DE /* MainViewController.swift in Sources */,
 				22C6FD28206D3CBC000534DE /* AppDelegate.swift in Sources */,
+				220AFA912072C5CA0091AA13 /* BoardViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
