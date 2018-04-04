@@ -2,7 +2,7 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "chessBoard.png",
+      "filename" : "chessBoardImage.png",
       "scale" : "1x"
     },
     {
