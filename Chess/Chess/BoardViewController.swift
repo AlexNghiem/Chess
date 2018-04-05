@@ -15,12 +15,13 @@ class BoardViewController: UIViewController {
     var margins: UILayoutGuide? = nil
     var portraitHeight: CGFloat = 0
     var portraitWidth: CGFloat = 0
-    var pieceArray: [[UIButton?]] = [[UIButton?](repeating: nil, count: 8)]
+    var pieceButtonArray = [[UIButton?]]()
     var pieceIsSelected = false
     var rowSelected = 0
     var colSelected = 0
     var squareSize: CGFloat = 0.0
     let selectedBox: UIButton = UIButton(frame: CGRect.zero)
+    let board = chessBoard()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +36,11 @@ class BoardViewController: UIViewController {
             portraitHeight = view.bounds.width
             portraitWidth = view.bounds.height
         }
+        squareSize = portraitWidth/10
+        
+        selectedBox.backgroundColor = UIColor.yellow.withAlphaComponent(0.5)
+        selectedBox.translatesAutoresizingMaskIntoConstraints = false
+        selectedBox.isHidden = true
         
         let backButton = UIButton(frame: CGRect.zero)
         backButton.translatesAutoresizingMaskIntoConstraints = false
@@ -49,7 +55,7 @@ class BoardViewController: UIViewController {
         backButton.heightAnchor.constraint(equalToConstant: portraitHeight/10)
         backButton.addTarget(self, action: #selector(self.backButtonPushed(_:)), for: UIControlEvents.touchUpInside)
         
-        let board: UIImageView = UIImageView(image: #imageLiteral(resourceName: "chessBoard.png"))
+        let board: UIImageView = UIImageView(image: #imageLiteral(resourceName: "chessBoardImage"))
         board.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(board)
         board.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -4*squareSize).isActive = true
@@ -74,8 +80,11 @@ class BoardViewController: UIViewController {
                 
                 tempRow[col] = testPiece
             }
-            pieceArray.append(tempRow)
+            pieceButtonArray.append(tempRow)
         }
+        
+        setUpBoard()
+        refreshBoard()
         
         let url = "http://1718.lakeside-cs.org/Chess_Project_(better_than_checkers)/spaghetti.php"
         func getServerResponse(url: String, parameters: [String: String]) {
@@ -83,7 +92,7 @@ class BoardViewController: UIViewController {
         }
         var components: URLComponents = URLComponents(string: url)!
         //components.queryItems = ["toMove": "white", "pieces": "RNBQKBNRPPPP PPP            P       p           pppppppprnbqkbnr"].map { (arg) -> URLQueryItem in
-        components.queryItems = ["toMove": "white", "pieces": "________________________________________________________________"].map { (arg) -> URLQueryItem in
+        components.queryItems = ["toMove": "white", "pieces": "RNBQKBNRPPPPPPPP                                pppppppprnbqkbnr"].map { (arg) -> URLQueryItem in
 
             let (key, value) = arg
             return URLQueryItem(name: key, value: value)
@@ -131,40 +140,115 @@ class BoardViewController: UIViewController {
         }
     }
     
-    @IBAction func chessPiecePushed(_ sender: piece) {
-        //print("debug... chess button pushed... action in chessPiecePushed is now being completed")
-        print("row: " + String((sender).rowCoord) + ", col: " + String((sender).colCoord))
-        if (sender.backgroundImage(for: UIControlState.normal) == #imageLiteral(resourceName: "KW")) {
-            print("This is white")
-            sender.setBackgroundImage(#imageLiteral(resourceName: "KB"), for: UIControlState.normal)
-        }
-        else {
-            sender.setBackgroundImage(#imageLiteral(resourceName: "KW"), for: UIControlState.normal)
-        }
-        if (!pieceIsSelected) {
-            selectSquare(row: (sender).rowCoord, col: (sender).colCoord)
+    class chessBoard {
+        var pieceArray = [[Character]](repeating: [Character](repeating: " ", count: 8), count: 8)
+        init() {
+            
         }
     }
     
-    @IBAction func clear(_ sender: UIButton) {
-        print("clearing")
-        sender.isHidden = true
+    func checkMoveLegal(rowClicked: Int, colClicked: Int) -> Bool {
+        return true
+    }
+    
+    func setUpBoard() {
+        board.pieceArray[0][0] = "R"
+        board.pieceArray[0][1] = "N"
+        board.pieceArray[0][2] = "B"
+        board.pieceArray[0][3] = "Q"
+        board.pieceArray[0][4] = "K"
+        board.pieceArray[0][5] = "B"
+        board.pieceArray[0][6] = "N"
+        board.pieceArray[0][7] = "R"
+        for col in 0...7 {
+            board.pieceArray[1][col] = "P"
+            board.pieceArray[6][col] = "p"
+        }
+        board.pieceArray[7][0] = "r"
+        board.pieceArray[7][1] = "n"
+        board.pieceArray[7][2] = "b"
+        board.pieceArray[7][3] = "q"
+        board.pieceArray[7][4] = "k"
+        board.pieceArray[7][5] = "b"
+        board.pieceArray[7][6] = "n"
+        board.pieceArray[7][7] = "r"
+    }
+    
+    func refreshBoard() {
+        for row in 0...7 {
+            for col in 0...7 {
+                if board.pieceArray[row][col] == "R" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "RW"), for: UIControlState.normal)
+                }
+                if board.pieceArray[row][col] == "N" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "NW"), for: UIControlState.normal)
+                }
+                if board.pieceArray[row][col] == "B" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "BW"), for: UIControlState.normal)
+                }
+                if board.pieceArray[row][col] == "Q" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "QW"), for: UIControlState.normal)
+                }
+                if board.pieceArray[row][col] == "K" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "KW"), for: UIControlState.normal)
+                }
+                if board.pieceArray[row][col] == "P" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "PW"), for: UIControlState.normal)
+                }
+                if board.pieceArray[row][col] == "r" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "RB"), for: UIControlState.normal)
+                }
+                if board.pieceArray[row][col] == "n" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "NB"), for: UIControlState.normal)
+                }
+                if board.pieceArray[row][col] == "b" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "BB"), for: UIControlState.normal)
+                }
+                if board.pieceArray[row][col] == "q" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "QB"), for: UIControlState.normal)
+                }
+                if board.pieceArray[row][col] == "k" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "KB"), for: UIControlState.normal)
+                }
+                if board.pieceArray[row][col] == "p" {
+                    pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "PB"), for: UIControlState.normal)
+                }
+            }
+        }
+    }
+    
+    //MARK: Selecting square
+    
+    @IBAction func chessPiecePushed(_ sender: piece) {
+        print("row: " + String((sender).rowCoord) + ", col: " + String((sender).colCoord))
+        if (!pieceIsSelected) {
+            selectSquare(row: (sender).rowCoord, col: (sender).colCoord)
+        }
+        else {
+            if (checkMoveLegal(rowClicked: sender.rowCoord, colClicked: sender.colCoord)) {
+                board.pieceArray[sender.rowCoord][sender.colCoord] = board.pieceArray[rowSelected][colSelected]
+                board.pieceArray[rowSelected][colSelected] = " "
+                clearSelectedBox(nil)
+                refreshBoard()
+            }
+        }
+    }
+    
+    @IBAction func clearSelectedBox(_ sender: Any?) {
+        selectedBox.isHidden = true
         pieceIsSelected = false
     }
     
     func selectSquare(row: Int, col: Int) {
-        let selectedBox: UIButton = UIButton(frame: CGRect.zero)
-        selectedBox.backgroundColor = UIColor.yellow.withAlphaComponent(0.5)
-        selectedBox.translatesAutoresizingMaskIntoConstraints = false
+        selectedBox.removeFromSuperview()
         view.addSubview(selectedBox)
-        selectedBox.isHidden = true
-        print("selecting square " + String(row))
         selectedBox.isHidden = false
+        pieceIsSelected = true
         selectedBox.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: squareSize*CGFloat((col-4))).isActive = true
         selectedBox.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: squareSize*CGFloat((row-4-2))).isActive = true
         selectedBox.heightAnchor.constraint(equalToConstant: squareSize).isActive = true
         selectedBox.widthAnchor.constraint(equalToConstant: squareSize).isActive = true
-        selectedBox.addTarget(self, action: #selector(self.clear(_:)), for: UIControlEvents.touchUpInside)
+        selectedBox.addTarget(self, action: #selector(self.clearSelectedBox(_:)), for: UIControlEvents.touchUpInside)
         pieceIsSelected = true
         rowSelected = row
         colSelected = col
