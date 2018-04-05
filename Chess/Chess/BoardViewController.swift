@@ -213,6 +213,9 @@ class BoardViewController: UIViewController {
                 if board.pieceArray[row][col] == "p" {
                     pieceButtonArray[row][col]?.setBackgroundImage(#imageLiteral(resourceName: "PB"), for: UIControlState.normal)
                 }
+                if board.pieceArray[row][col] == " " {
+                    pieceButtonArray[row][col]?.setBackgroundImage(nil, for: UIControlState.normal)
+                }
             }
         }
     }
@@ -222,7 +225,9 @@ class BoardViewController: UIViewController {
     @IBAction func chessPiecePushed(_ sender: piece) {
         print("row: " + String((sender).rowCoord) + ", col: " + String((sender).colCoord))
         if (!pieceIsSelected) {
-            selectSquare(row: (sender).rowCoord, col: (sender).colCoord)
+            if (board.pieceArray[sender.rowCoord][sender.colCoord] != " ") {
+                selectSquare(row: (sender).rowCoord, col: (sender).colCoord)
+            }
         }
         else {
             if (checkMoveLegal(rowClicked: sender.rowCoord, colClicked: sender.colCoord)) {
