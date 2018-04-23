@@ -315,6 +315,10 @@ class BoardViewController: UIViewController {
                     }
                 }
             }
+            //PAWNS
+            if ((boardContainsSquare(row: king.row - 1, col: king.col - 1) && boardToCheck.pieceArray[king.row - 1][king.col - 1] == "p") || (boardContainsSquare(row: king.row - 1, col: king.col + 1) && boardToCheck.pieceArray[king.row - 1][king.col + 1] == "p")) {
+                return true
+            }
             return false
         }
         else {
