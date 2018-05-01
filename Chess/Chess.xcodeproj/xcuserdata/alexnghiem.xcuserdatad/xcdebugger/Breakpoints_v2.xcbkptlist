@@ -10,27 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chess/BoardViewController.swift"
-            timestampString = "546142291.8855031"
+            timestampString = "546904645.794551"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "91"
-            endingLineNumber = "91"
-            landmarkName = "viewDidLoad()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Chess/BoardViewController.swift"
-            timestampString = "546142291.886209"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "592"
-            endingLineNumber = "592"
+            startingLineNumber = "677"
+            endingLineNumber = "677"
             landmarkName = "refreshBoard()"
             landmarkType = "7">
          </BreakpointContent>
@@ -42,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chess/BoardViewController.swift"
-            timestampString = "546142291.886676"
+            timestampString = "546904645.795119"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "428"
-            endingLineNumber = "428"
+            startingLineNumber = "507"
+            endingLineNumber = "507"
             landmarkName = "rookMoveArray(row:col:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -58,12 +42,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chess/BoardViewController.swift"
-            timestampString = "546142291.8869669"
+            timestampString = "546904645.7954561"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "370"
-            endingLineNumber = "370"
-            landmarkName = "rookMoveArray(row:col:)"
+            startingLineNumber = "449"
+            endingLineNumber = "449"
+            landmarkName = "getMoveArray(row:col:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -74,12 +58,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chess/BoardViewController.swift"
-            timestampString = "546142291.887254"
+            timestampString = "546904645.7957619"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "533"
-            endingLineNumber = "533"
-            landmarkName = "kingMoveArray(row:col:)"
+            startingLineNumber = "612"
+            endingLineNumber = "612"
+            landmarkName = "bishopMoveArray(row:col:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -90,12 +74,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chess/BoardViewController.swift"
-            timestampString = "546142291.887548"
+            timestampString = "546904645.796064"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "216"
-            endingLineNumber = "216"
-            landmarkName = "inCheck(boardToCheck:white:)"
+            startingLineNumber = "295"
+            endingLineNumber = "295"
+            landmarkName = "playerCheckmated(boardToCheck:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

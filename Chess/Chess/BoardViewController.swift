@@ -28,14 +28,24 @@ class BoardViewController: UIViewController {
     var board = chessBoard()
     var tempBoard: chessBoard = chessBoard()
     
+    let cancelPromoteOption: UIButton = UIButton(frame: CGRect.zero)
+    let knightPromoteOption: UIButton = UIButton(frame: CGRect.zero)
+    let bishopPromoteOption: UIButton = UIButton(frame: CGRect.zero)
+    let rookPromoteOption: UIButton = UIButton(frame: CGRect.zero)
+    let queenPromoteOption: UIButton = UIButton(frame: CGRect.zero)
+    var colToPromote: Int = 0
+    var promoteOptionSize: CGFloat = 0
+    
     let isPlayingAsWhite = true
-    var whiteHasMovedKing = false
-    var blackHasMovedKing = false
+    var whiteCanCastleKing = true
+    var whiteCanCastleQueen = true
+    var blackCanCastleKing = true
+    var blackCanCastleQueen = true
     
     let upperCaseCharacterSet = CharacterSet.uppercaseLetters
     let lowerCaseCharacterSet = CharacterSet.lowercaseLetters
     
-    let DEBUGMODE: Bool = true
+    let DEBUGMODE: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,10 +61,56 @@ class BoardViewController: UIViewController {
             portraitWidth = view.bounds.height
         }
         squareSize = portraitWidth/10
+        promoteOptionSize = squareSize * 1.5
         
         selectedBox.backgroundColor = UIColor.yellow.withAlphaComponent(0.5)
         selectedBox.translatesAutoresizingMaskIntoConstraints = false
         selectedBox.isHidden = true
+        
+        cancelPromoteOption.isHidden = true
+        knightPromoteOption.isHidden = true
+        bishopPromoteOption.isHidden = true
+        rookPromoteOption.isHidden = true
+        queenPromoteOption.isHidden = true
+        view.addSubview(cancelPromoteOption)
+        view.addSubview(knightPromoteOption)
+        view.addSubview(bishopPromoteOption)
+        view.addSubview(rookPromoteOption)
+        view.addSubview(queenPromoteOption)
+        cancelPromoteOption.translatesAutoresizingMaskIntoConstraints = false
+        knightPromoteOption.translatesAutoresizingMaskIntoConstraints = false
+        bishopPromoteOption.translatesAutoresizingMaskIntoConstraints = false
+        rookPromoteOption.translatesAutoresizingMaskIntoConstraints = false
+        queenPromoteOption.translatesAutoresizingMaskIntoConstraints = false
+        knightPromoteOption.setBackgroundImage(#imageLiteral(resourceName: "NW"), for: UIControlState.normal)
+        bishopPromoteOption.setBackgroundImage(#imageLiteral(resourceName: "BW"), for: UIControlState.normal)
+        rookPromoteOption.setBackgroundImage(#imageLiteral(resourceName: "RW"), for: UIControlState.normal)
+        queenPromoteOption.setBackgroundImage(#imageLiteral(resourceName: "QW"), for: UIControlState.normal)
+        cancelPromoteOption.leadingAnchor.constraint(equalTo: margins.leadingAnchor).isActive = true
+        cancelPromoteOption.trailingAnchor.constraint(equalTo: margins.trailingAnchor).isActive = true
+        cancelPromoteOption.topAnchor.constraint(equalTo: margins.topAnchor).isActive = true
+        cancelPromoteOption.bottomAnchor.constraint(equalTo: margins.bottomAnchor).isActive = true
+        knightPromoteOption.heightAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
+        knightPromoteOption.widthAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
+        knightPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(Double(squareSize)*(Double(-4 - 2) - 0.5))-promoteOptionSize).isActive = true
+        bishopPromoteOption.heightAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
+        bishopPromoteOption.widthAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
+        bishopPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(Double(squareSize)*(Double(-4 - 2) - 0.5))-promoteOptionSize).isActive = true
+        rookPromoteOption.heightAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
+        rookPromoteOption.widthAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
+        rookPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(Double(squareSize)*(Double(-4 - 2) - 0.5))-promoteOptionSize).isActive = true
+        queenPromoteOption.heightAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
+        queenPromoteOption.widthAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
+        queenPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(Double(squareSize)*(Double(-4 - 2) - 0.5))-promoteOptionSize).isActive = true
+        knightPromoteOption.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -2*promoteOptionSize).isActive = true
+        bishopPromoteOption.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -promoteOptionSize).isActive = true
+        rookPromoteOption.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: 0).isActive = true
+        queenPromoteOption.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: promoteOptionSize).isActive = true
+        cancelPromoteOption.addTarget(self, action: #selector(self.cancelPromotion(_:)), for: UIControlEvents.touchUpInside)
+        knightPromoteOption.addTarget(self, action: #selector(self.promoteKnight(_:)), for: UIControlEvents.touchUpInside)
+        bishopPromoteOption.addTarget(self, action: #selector(self.promoteBishop(_:)), for: UIControlEvents.touchUpInside)
+        rookPromoteOption.addTarget(self, action: #selector(self.promoteRook(_:)), for: UIControlEvents.touchUpInside)
+        queenPromoteOption.addTarget(self, action: #selector(self.promoteQueen(_:)), for: UIControlEvents.touchUpInside)
         
         let backButton = UIButton(frame: CGRect.zero)
         backButton.translatesAutoresizingMaskIntoConstraints = false
@@ -76,7 +132,7 @@ class BoardViewController: UIViewController {
         boardImage.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: (-4-2)*squareSize).isActive = true
         boardImage.heightAnchor.constraint(equalToConstant: squareSize*8).isActive = true
         boardImage.widthAnchor.constraint(equalToConstant: squareSize*8).isActive = true
-        
+
         for row in 0...7 {
             var tempButtonRow = [UIButton]()
             var tempViewRow = [UIButton]()
@@ -110,39 +166,6 @@ class BoardViewController: UIViewController {
         //setUpBoard()
         board = setUpBoardFromString(boardToSet: board, pieces: startPiecesString)
         refreshBoard()
-        
-        let url = "http://1718.lakeside-cs.org/Chess_Project_(better_than_checkers)/spaghetti.php"
-        func getServerResponse(url: String, parameters: [String: String]) {
-            
-        }
-        var components: URLComponents = URLComponents(string: url)!
-        //components.queryItems = ["toMove": "white", "pieces": "RNBQKBNRPPPP PPP            P       p           pppppppprnbqkbnr"].map { (arg) -> URLQueryItem in
-        //components.queryItems = ["toMove": "white", "pieces": "RNBQKBNRPPPPPPPP________________________________pppppppprnbqkbnr"].map { (arg) -> URLQueryItem in
-        components.queryItems = ["toMove": "white", "pieces": "spaghet", "castleWhiteKingside" : "true", "castleWhiteQueenside" : "true", "castleBlackKingside" : "true", "castleBlackQueenside" : "true"].map { (arg) -> URLQueryItem in
-            let (key, value) = arg
-            return URLQueryItem(name: key, value: value)
-        }
-        let request: URLRequest = URLRequest(url: components.url!)
-        //SERVER STUFF
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-            if(error != nil) {
-                print(error as Any)
-            }
-            else {
-                if let content = data {
-                    do {
-                        print(content)
-                        //let Json = try JSONSerialization.jsonObject(with: content, options: JSONSerialization.ReadingOptions.mutableContainers) as AnyObject
-                        let Json = try JSONSerialization.jsonObject(with: content, options: .allowFragments) as AnyObject
-                        print(Json)
-                    }
-                    catch {
-                        print(error)
-                    }
-                }
-            }
-        }
-        task.resume()
     }
     
     //MARK: Errors
@@ -205,6 +228,76 @@ class BoardViewController: UIViewController {
         }
     }
     
+    //MARK: Server Logic
+    
+    func updateBoardFromServerResponse() {
+        if let serverResponseString: String = getServerResponse() {
+            board = setUpBoardFromString(boardToSet: board, pieces: serverResponseString)
+            if (inCheck(boardToCheck: board, white: false)) {
+                playerWin()
+            }
+            if (playerCheckmated(boardToCheck: board)) {
+                playerLoss()
+            }
+            refreshBoard()
+        }
+    }
+    
+    func getServerResponse() -> String? {
+        if (board.pieceArray[7][0] != "R" || board.pieceArray[7][4] != "K") {
+            whiteCanCastleQueen = false
+        }
+        if (board.pieceArray[7][4] != "K" || board.pieceArray[7][7] != "R") {
+            whiteCanCastleKing = false
+        }
+        let url = "http://1718.lakeside-cs.org/Chess_Project_(better_than_checkers)/spaghetti.php"
+        var components: URLComponents = URLComponents(string: url)!
+        components.queryItems = ["toMove": "white", "pieces": "spaghet", "castleWhiteKingside" : "true", "castleWhiteQueenside" : "true", "castleBlackKingside" : "true", "castleBlackQueenside" : "true"].map { (arg) -> URLQueryItem in
+            let (key, value) = arg
+            return URLQueryItem(name: key, value: value)
+        }
+        let request: URLRequest = URLRequest(url: components.url!)
+        var returnString: String? = nil
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if(error != nil) {
+                print(error as Any)
+            }
+            else {
+                if let content = data {
+                    do {
+                        print(content)
+                        //let Json = try JSONSerialization.jsonObject(with: content, options: JSONSerialization.ReadingOptions.mutableContainers) as AnyObject
+                        let Json = try JSONSerialization.jsonObject(with: content, options: .allowFragments) as AnyObject
+                        returnString = Json as? String
+                    }
+                    catch {
+                        print(error)
+                    }
+                }
+            }
+        }
+        task.resume()
+        return returnString
+    }
+    
+    func playerCheckmated(boardToCheck: chessBoard) -> Bool {
+        if (inCheck(boardToCheck: boardToCheck, white: true)) {
+            for row in 0...7 {
+                for col in 0...7 {
+                    if (upperCaseCharacterSet.contains(board.pieceArray[row][col].unicodeScalars.first!)) {
+                        if (getMoveArray(row: row, col: col).count != 0) {
+                            return false
+                        }
+                    }
+                }
+            }
+            return true
+        }
+        return false
+    }
+    
+    //MARK: Board Logic
+    
     func checkMoveLegal(rowToCheck: Int, colToCheck: Int) -> Bool {
         tempBoard = setUpBoardFromString(boardToSet: chessBoard(), pieces: board.getString())
         tempBoard.pieceArray[rowToCheck][colToCheck] = tempBoard.pieceArray[rowSelected][colSelected]
@@ -225,7 +318,7 @@ class BoardViewController: UIViewController {
                 else {
                     piece = boardToCheck.pieceArray[king.row][colIterator]
                     if (piece != " ") {
-                        if (piece == "r" || piece == "q") {
+                        if ((white && (piece == "r" || piece == "q")) || (!white && (piece == "R" || piece == "Q"))) {
                             return true
                         }
                         break posColIterator
@@ -241,7 +334,7 @@ class BoardViewController: UIViewController {
                 else {
                     piece = boardToCheck.pieceArray[king.row][colIterator]
                     if (piece != " ") {
-                        if (piece == "r" || piece == "q") {
+                        if ((white && (piece == "r" || piece == "q")) || (!white && (piece == "R" || piece == "Q"))) {
                             return true
                         }
                         break negColIterator
@@ -257,7 +350,7 @@ class BoardViewController: UIViewController {
                 else {
                     piece = boardToCheck.pieceArray[rowIterator][king.col]
                     if (piece != " ") {
-                        if (piece == "r" || piece == "q") {
+                        if ((white && (piece == "r" || piece == "q")) || (!white && (piece == "R" || piece == "Q"))) {
                             return true
                         }
                         break posRowIterator
@@ -273,7 +366,7 @@ class BoardViewController: UIViewController {
                 else {
                     piece = boardToCheck.pieceArray[rowIterator][king.col]
                     if (piece != " ") {
-                        if (piece == "r" || piece == "q") {
+                        if ((white && (piece == "r" || piece == "q")) || (!white && (piece == "R" || piece == "Q"))) {
                             return true
                         }
                         break negRowIterator
@@ -307,7 +400,7 @@ class BoardViewController: UIViewController {
                     else {
                         piece = boardToCheck.pieceArray[rowIterator][colIterator]
                         if (piece != " ") {
-                            if (piece == "b" || piece == "q") {
+                            if ((white && (piece == "b" || piece == "q")) || (!white && (piece == "B" || piece == "Q"))) {
                                 return true
                             }
                             break directionIterator
@@ -316,7 +409,7 @@ class BoardViewController: UIViewController {
                 }
             }
             //PAWNS
-            if ((boardContainsSquare(row: king.row - 1, col: king.col - 1) && boardToCheck.pieceArray[king.row - 1][king.col - 1] == "p") || (boardContainsSquare(row: king.row - 1, col: king.col + 1) && boardToCheck.pieceArray[king.row - 1][king.col + 1] == "p")) {
+            if ((boardContainsSquare(row: king.row - 1, col: king.col - 1) && (white && boardToCheck.pieceArray[king.row - 1][king.col - 1] == "p") || (!white && boardToCheck.pieceArray[king.row - 1][king.col - 1] == "P")) || (boardContainsSquare(row: king.row - 1, col: king.col + 1) && (white && boardToCheck.pieceArray[king.row - 1][king.col + 1] == "p") || (!white && boardToCheck.pieceArray[king.row - 1][king.col + 1] == "P"))) {
                 return true
             }
             return false
@@ -531,6 +624,12 @@ class BoardViewController: UIViewController {
                 }
             }
         }
+        if (whiteCanCastleKing && !inCheck(boardToCheck: board, white: true) && board.pieceArray[7][5] == " " && board.pieceArray[7][6] == " " && checkMoveLegal(rowToCheck: 7, colToCheck: 5) && checkMoveLegal(rowToCheck: 7, colToCheck: 6)) {
+            moveArray.append(square(row: 7, col: 6))
+        }
+        if (whiteCanCastleQueen && !inCheck(boardToCheck: board, white: true) && board.pieceArray[7][3] == " " && board.pieceArray[7][2] == " " && board.pieceArray[7][1] == " " && checkMoveLegal(rowToCheck: 7, colToCheck: 3) && checkMoveLegal(rowToCheck: 7, colToCheck: 2)) {
+            moveArray.append(square(row: 7, col: 2))
+        }
         return moveArray
     }
     
@@ -610,10 +709,43 @@ class BoardViewController: UIViewController {
     
     @IBAction func moveOptionSelected(_ sender: option) {
         clearOptions()
+        if (board.pieceArray[rowSelected][colSelected] == "P") {
+            if (sender.row == 0) {
+                colToPromote = sender.col
+                showPromoteOptions()
+                return
+            }
+        }
+        clearSelectedBox(nil)
+        if (board.pieceArray[7][0] != "R" || board.pieceArray[7][4] != "K") {
+            whiteCanCastleQueen = false
+        }
+        if (board.pieceArray[7][4] != "K" || board.pieceArray[7][7] != "R") {
+            whiteCanCastleKing = false
+        }
         board.pieceArray[sender.row][sender.col] = board.pieceArray[rowSelected][colSelected]
         board.pieceArray[rowSelected][colSelected] = " "
-        clearSelectedBox(nil)
+        if (sender.row == 7 && rowSelected == 7) {
+            if (whiteCanCastleKing && colSelected == 4 && sender.col == 6) {
+                board.pieceArray[7][4] = " "
+                board.pieceArray[7][5] = "R"
+                board.pieceArray[7][6] = "K"
+                board.pieceArray[7][7] = " "
+                whiteCanCastleQueen = false
+                whiteCanCastleKing = false
+            }
+            if (whiteCanCastleQueen && colSelected == 4 && sender.col == 2) {
+                board.pieceArray[7][0] = " "
+                board.pieceArray[7][1] = " "
+                board.pieceArray[7][2] = "K"
+                board.pieceArray[7][3] = "R"
+                board.pieceArray[7][4] = " "
+                whiteCanCastleQueen = false
+                whiteCanCastleKing = false
+            }
+        }
         refreshBoard()
+        updateBoardFromServerResponse()
     }
     
     @IBAction func chessPiecePushed(_ sender: piece) {
@@ -641,6 +773,55 @@ class BoardViewController: UIViewController {
         clearOptions()
     }
     
+    func showPromoteOptions() {
+        moveOptions[0][colToPromote].isHidden = false
+        cancelPromoteOption.isHidden = false
+        knightPromoteOption.isHidden = false
+        bishopPromoteOption.isHidden = false
+        rookPromoteOption.isHidden = false
+        queenPromoteOption.isHidden = false
+    }
+    
+    @IBAction func cancelPromotion(_ sender: UIButton) {
+        cancelPromoteOption.isHidden = true
+        knightPromoteOption.isHidden = true
+        bishopPromoteOption.isHidden = true
+        rookPromoteOption.isHidden = true
+        queenPromoteOption.isHidden = true
+        selectSquare(row: rowSelected, col: colSelected)
+    }
+    
+    @IBAction func promoteKnight(_ sender: UIButton) {
+        promote(piece: "N")
+    }
+    
+    @IBAction func promoteBishop(_ sender: UIButton) {
+        promote(piece: "B")
+    }
+    
+    @IBAction func promoteRook(_ sender: UIButton) {
+        promote(piece: "R")
+    }
+    
+    @IBAction func promoteQueen(_ sender: UIButton) {
+        promote(piece: "Q")
+    }
+    
+    func promote(piece: Character) {
+        cancelPromoteOption.isHidden = true
+        knightPromoteOption.isHidden = true
+        bishopPromoteOption.isHidden = true
+        rookPromoteOption.isHidden = true
+        queenPromoteOption.isHidden = true
+        board.pieceArray[rowSelected][colSelected] = " "
+        board.pieceArray[0][colToPromote] = piece
+        selectedBox.isHidden = true
+        pieceIsSelected = false
+        clearOptions()
+        refreshBoard()
+        updateBoardFromServerResponse()
+    }
+    
     func selectSquare(row: Int, col: Int) {
         selectedBox.removeFromSuperview()
         view.addSubview(selectedBox)
@@ -658,6 +839,7 @@ class BoardViewController: UIViewController {
     }
     
     func displayOptions(row: Int, col: Int) {
+        clearOptions()
         for square in getMoveArray(row: row, col: col) {
             moveOptions[square.row][square.col].isHidden = false
         }
@@ -677,4 +859,11 @@ class BoardViewController: UIViewController {
         performSegue(withIdentifier: "unwindToMainViewController", sender: self)
     }
     
+    func playerWin() {
+        print("player win")
+    }
+    
+    func playerLoss() {
+        print("player loss")
+    }
 }
