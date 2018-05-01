@@ -67,7 +67,7 @@ class MainViewController: UIViewController {
         //Button
         let playButton: UIButton = UIButton(frame: CGRect.zero)
         playButton.backgroundColor = UIColor.black
-        playButton.setTitle("play", for: UIControlState.normal)
+        playButton.setTitle("Play", for: UIControlState.normal)
         playButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/12)
         playButton.translatesAutoresizingMaskIntoConstraints = false
         
@@ -128,11 +128,10 @@ class MainViewController: UIViewController {
         
         loginButton.addTarget(self, action: #selector(MainViewController.loginButtonPushed(_:)), for: UIControlEvents.touchUpInside)
 
-        
-        
-        
-        
-        
+        button.backgroundColor = UIColor.black
+        button.setTitle("How to Play", for: UIControlState.normal)
+        button.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/12)
+
 
     }
 
