@@ -14,6 +14,7 @@
 		22C6FD2F206D3CBC000534DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22C6FD2E206D3CBC000534DE /* Assets.xcassets */; };
 		22C6FD32206D3CBC000534DE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22C6FD30206D3CBC000534DE /* LaunchScreen.storyboard */; };
 		22C6FD3D206D3CBC000534DE /* ChessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C6FD3C206D3CBC000534DE /* ChessTests.swift */; };
+		9DEB3D5520865FFA00EC79F6 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DEB3D5420865FFA00EC79F6 /* LoginViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,7 @@
 		22C6FD38206D3CBC000534DE /* ChessTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChessTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		22C6FD3C206D3CBC000534DE /* ChessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessTests.swift; sourceTree = "<group>"; };
 		22C6FD3E206D3CBC000534DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9DEB3D5420865FFA00EC79F6 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 				22C6FD27206D3CBC000534DE /* AppDelegate.swift */,
 				22C6FD29206D3CBC000534DE /* MainViewController.swift */,
 				220AFA902072C5CA0091AA13 /* BoardViewController.swift */,
+				9DEB3D5420865FFA00EC79F6 /* LoginViewController.swift */,
 				22C6FD2B206D3CBC000534DE /* Main.storyboard */,
 				22C6FD2E206D3CBC000534DE /* Assets.xcassets */,
 				22C6FD30206D3CBC000534DE /* LaunchScreen.storyboard */,
@@ -202,6 +205,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DEB3D5520865FFA00EC79F6 /* LoginViewController.swift in Sources */,
 				22C6FD2A206D3CBC000534DE /* MainViewController.swift in Sources */,
 				22C6FD28206D3CBC000534DE /* AppDelegate.swift in Sources */,
 				220AFA912072C5CA0091AA13 /* BoardViewController.swift in Sources */,

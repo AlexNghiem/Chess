@@ -16,7 +16,8 @@ class MainViewController: UIViewController {
     var portraitWidth: CGFloat = 0
     
     // initialize intro label
-    let introLabel = UILabel(frame: CGRect(x:60, y:50,width: 300, height: 500))
+    let closeButton: UIButton = UIButton(frame: CGRect.zero)
+    let introLabel: UILabel = UILabel(frame: CGRect.zero)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +31,25 @@ class MainViewController: UIViewController {
             portraitHeight = view.bounds.width
             portraitWidth = view.bounds.height
         }
+        
+        // close intro button
+        
+        
+        closeButton.isHidden = true
+        
+        closeButton.backgroundColor = UIColor.red
+        closeButton.setTitle("X", for : UIControlState.normal)
+        closeButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/48)
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(closeButton)
+        
+        
+        closeButton.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/2-20).isActive = true
+        closeButton.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/2).isActive = true
+        closeButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 - 10).isActive = true
+        closeButton.heightAnchor.constraint(equalToConstant: 50)
+        closeButton.addTarget(self, action: #selector(self.buttonPressed(_:)), for: .touchUpInside)
+
         
         //Title box
         let titleBox: UILabel = UILabel(frame: CGRect.zero)
@@ -59,24 +79,61 @@ class MainViewController: UIViewController {
         playButton.heightAnchor.constraint(equalToConstant: portraitHeight/10)
         playButton.addTarget(self, action: #selector(MainViewController.playButtonPushed(_:)), for: UIControlEvents.touchUpInside)
         
+        //how to play button
+        let button: UIButton = UIButton(frame: CGRect.zero)
+        view.addSubview(button)
+        
+        button.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4).isActive = true
+        button.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4).isActive = true
+        button.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: +portraitHeight/8).isActive = true
+        button.heightAnchor.constraint(equalToConstant: portraitHeight/10)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        button.backgroundColor = UIColor.black
+        button.setTitle("How To Play", for: UIControlState.normal)
+        button.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/24)
+        
+        button.addTarget(self, action: #selector(self.buttonPressed(_:)), for: .touchUpInside)
+        
         //initialize introduction stuff
+        self.view.addSubview(introLabel)
+        
         introLabel.isHidden = true
         introLabel.lineBreakMode = .byWordWrapping
         introLabel.numberOfLines = 0
         introLabel.backgroundColor = UIColor.white
         
+        introLabel.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/2 + 10).isActive = true
+        introLabel.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/2 - 10).isActive = true
+        introLabel.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4).isActive = true
+        introLabel.heightAnchor.constraint(equalToConstant: portraitHeight)
+        introLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        
         introLabel.text = "Move your pieces and take your opponents pieces to trap the opponent's King!\nPiece Moves: \nPawn : Can move forwards 1 space and takes pieces diagonally. Can move two spaces if being moved for the first time \n\nKnight : can move in a 3x2 or 2x3 L shape in any direction \n\nBishop : can move along diagonals \n\nRook : can move vertically and horizontally \n\nQueen : can move vertically, horizontally, and along diagonals \n\nKing can move one space in any direction \n\n Press How To Play again to close"
-        self.view.addSubview(introLabel)
         
-        let button = UIButton()
-        button.frame = CGRect(x: 30, y: 500, width: 350, height: 80)
+        //login stuff
+        let loginButton: UIButton = UIButton(frame: CGRect.zero)
+        loginButton.backgroundColor = UIColor.black
+        loginButton.setTitle("Login", for: UIControlState.normal)
+        loginButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/24)
+        loginButton.translatesAutoresizingMaskIntoConstraints = false
         
-        button.backgroundColor = UIColor.black
-        button.setTitle("How To Play", for: UIControlState.normal)
-        button.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/12)
+        view.addSubview(loginButton)
+        
+        loginButton.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4).isActive = true
+        loginButton.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4).isActive = true
+        loginButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: +portraitHeight/5).isActive = true
+        loginButton.heightAnchor.constraint(equalToConstant: portraitHeight/10)
+        
+        loginButton.addTarget(self, action: #selector(MainViewController.loginButtonPushed(_:)), for: UIControlEvents.touchUpInside)
 
-        button.addTarget(self, action: #selector(self.ButtonPressed(_:)), for: .touchUpInside)
-        view.addSubview(button)
+        
+        
+        
+        
+        
+
     }
 
     override func didReceiveMemoryWarning() {
@@ -90,19 +147,26 @@ class MainViewController: UIViewController {
         present(view, animated: true, completion: nil)
     }
     
+    @IBAction func loginButtonPushed (_ sender: UIButton) {
+        let view: UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "LoginViewControllerID") as UIViewController
+        present(view, animated: true, completion: nil)
+    }
+    
     @IBAction func unwindToMainViewController(segue: UIStoryboardSegue) {
         
     }
     
-    @IBAction func ButtonPressed(_ sender: UIButton!)
+    @IBAction func buttonPressed(_ sender: UIButton!)
     {
         if(introLabel.isHidden == false)
         {
             introLabel.isHidden = true;
+            closeButton.isHidden = true;
         }
         else
         {
             introLabel.isHidden = false;
+            closeButton.isHidden = false;
         }
     }
 }
