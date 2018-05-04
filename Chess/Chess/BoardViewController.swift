@@ -194,11 +194,16 @@ class BoardViewController: UIViewController {
         var pieceArray = [[Character]](repeating: [Character](repeating: " ", count: 8), count: 8)
         init() {
         }
-        func getString() -> String {
+        func getString(useUnderscores: Bool) -> String {
             var pieces = ""
             for row in 0...7 {
                 for col in 0...7 {
-                    pieces = pieces + String(self.pieceArray[row][col])
+                    if (useUnderscores && self.pieceArray[row][col] == " ") {
+                        pieces = pieces + "_"
+                    }
+                    else {
+                        pieces = pieces + String(self.pieceArray[row][col])
+                    }
                 }
             }
             return pieces
@@ -252,7 +257,7 @@ class BoardViewController: UIViewController {
         }
         let url = "http://1718.lakeside-cs.org/Chess_Project_(better_than_checkers)/spaghetti.php"
         var components: URLComponents = URLComponents(string: url)!
-        components.queryItems = ["toMove": "white", "pieces": "spaghet", "castleWhiteKingside" : "true", "castleWhiteQueenside" : "true", "castleBlackKingside" : "true", "castleBlackQueenside" : "true"].map { (arg) -> URLQueryItem in
+        components.queryItems = ["toMove": (isPlayingAsWhite ? "true" : "false"), "pieces": board.getString(useUnderscores: true), "castleWhiteKingside" : (whiteCanCastleKing ? "true" : "false"), "castleWhiteQueenside" : (whiteCanCastleQueen ? "true" : "false"), "castleBlackKingside" : (blackCanCastleKing ? "true" : "false"), "castleBlackQueenside" : (blackCanCastleQueen ? "true" : "false")].map { (arg) -> URLQueryItem in
             let (key, value) = arg
             return URLQueryItem(name: key, value: value)
         }
@@ -299,7 +304,7 @@ class BoardViewController: UIViewController {
     //MARK: Board Logic
     
     func checkMoveLegal(rowToCheck: Int, colToCheck: Int) -> Bool {
-        tempBoard = setUpBoardFromString(boardToSet: chessBoard(), pieces: board.getString())
+        tempBoard = setUpBoardFromString(boardToSet: chessBoard(), pieces: board.getString(useUnderscores: false))
         tempBoard.pieceArray[rowToCheck][colToCheck] = tempBoard.pieceArray[rowSelected][colSelected]
         tempBoard.pieceArray[rowSelected][colSelected] = " "
         return !inCheck(boardToCheck: tempBoard, white: true)
