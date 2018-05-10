@@ -86,12 +86,12 @@ class MainViewController: UIViewController {
         button.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4).isActive = true
         button.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4).isActive = true
         button.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: +portraitHeight/8).isActive = true
-        button.heightAnchor.constraint(equalToConstant: portraitHeight/24)
+        button.heightAnchor.constraint(equalToConstant: portraitHeight/16).isActive = true
         
         
         button.backgroundColor = UIColor.black
         button.setTitle("How To Play", for: UIControlState.normal)
-        button.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/48)
+        button.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/24)
         button.translatesAutoresizingMaskIntoConstraints = false
         
         button.addTarget(self, action: #selector(self.buttonPressed(_:)), for: .touchUpInside)
@@ -128,10 +128,6 @@ class MainViewController: UIViewController {
         loginButton.heightAnchor.constraint(equalToConstant: portraitHeight/10)
         
         loginButton.addTarget(self, action: #selector(MainViewController.loginButtonPushed(_:)), for: UIControlEvents.touchUpInside)
-
-        button.backgroundColor = UIColor.black
-        button.setTitle("How to Play", for: UIControlState.normal)
-        button.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/12)
 
 
     }
