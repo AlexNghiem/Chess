@@ -5,10 +5,13 @@ Spyder Editor
 
 This is a temporary script file.
 """
+
+
 from enum import Enum
 import time
 import itertools
-
+import json as js
+import sys
 
 
 def isOnBoard(x,y):
@@ -76,17 +79,6 @@ class Pawn(Piece):
         self.value = 1
 
 class Board:
-    blackScore = 0
-    whiteScore = 0
-    score = 0
-    position = 1
-    over = False
-    inCheck = Color.NONE #is a Color if true
-    currentTurn = Color.WHITE
-    nextBoards = []
-    playingAs = Color.WHITE
-    bonusScore = [0,0]
-    givenScore = [0,0]
     
     def resetBoard(self):
         for i in range (0,8):
@@ -112,7 +104,6 @@ class Board:
         self.position[7][4] = King(Color.BLACK)
     
     def getNextBoards(self):
-        #self.gameOver()
         if(self.over == False):
             for i in range (0,8):
                 for j in range (0,8):
@@ -377,39 +368,41 @@ class Board:
         if(isOnBoard(x,y) and self.position[x][y].color != self.currentTurn):
             #startTime = time.time()
             newBoard = self.deepCopy()
+
             #totalTime += time.time() - startTime
             newBoard.nextBoards = []
             b = (type(self.position[x][y]) is Empty)
             if(type(self.position[i][j]) is Pawn or type(self.position[i][j]) is Rook or type(self.position[i][j]) is King):
                 newBoard.position[i][j].hasMoved = True
+            if(type(self.position[x][y]) is King):
+                newBoard.over = True
             newBoard.position[x][y] = newBoard.position[i][j]
             newBoard.position[i][j] = Empty(Color.NONE)
             
             #slow cause happens every time...
             #print(newBoard.score)
             newBoard.countScore()
-            #print(newBoard.score)
-            newBoard.givenScore = self.bonusScore
-            newBoard.bonusScore = [0,0]
             
+            #print(newBoard.score)
             
             if(self.currentTurn == Color.WHITE):
                 newBoard.currentTurn = Color.BLACK
+                newBoard.givenScore = self.givenScore
+                newBoard.bonusScore = [0,0]
             else:
                 newBoard.currentTurn = Color.WHITE
+                newBoard.givenScore = self.bonusScore
+                newBoard.bonusScore = [0,0]
             self.nextBoards.append(newBoard)
-            timesCalled += 1
             return b 
         return False
                
     def countScore(self):
-        self.blackScore = 0
-        self.whiteScore = 0
         #self.score = sum([sum([piece.value for piece in row if piece.color == self.playingAs]) for row in self.position])
-        self.score = sum([piece.value for piece in itertools.chain.from_iterable(self.position) if piece.color == self.playingAs])
+        self.score = sum([piece.value if piece.color == self.playingAs else piece.value*-1 for piece in itertools.chain.from_iterable(self.position)])
         
-        
-        '''for i in range (0,8):
+        '''
+        for i in range (0,8):
             for j in range (0,8):
                 if(self.position[i][j].color == Color.WHITE):
                     self.whiteScore += self.position[i][j].value
@@ -421,7 +414,7 @@ class Board:
         if(self.playingAs == Color.BLACK):
             self.score = self.blackScore - self.whiteScore
         '''
-        
+
         
     def gameOver(self):
         whiteking = True
@@ -475,7 +468,14 @@ class Board:
         #global totalTime2
         #global timesCalled
         self.playingAs = playingAs
-        self.position = [[[]for i in range(8)] for k in range(8)]
+        self.position = [[[] for i in range(8)] for k in range(8)]
+        self.score = 0
+        self.over = False
+        self.inCheck = Color.NONE #is a Color if true
+        self.currentTurn = playingAs
+        self.nextBoards = []
+        self.bonusScore = [0,0]
+        self.givenScore = [0,0]
         #startTime = time.time()        
         #self.position = np.array(self.position)
         #totalTime += time.time() - startTime
@@ -483,32 +483,78 @@ class Board:
 def printBoard(current):
     for i in range(0,8):
         for j in range (0,8):
-            print(current.position[i][j].printStr,end = '')
+            print(current.position[i][j].printStr,end = '')   
         print()
+    #print(current.score)
+    #print("--------------------")
     print()
-    print("--------------------")
-    print()
+    
+def stringBoard(current):
+    string = ""
+    for i in range(0,8):
+        for j in range (0,8):
+            if(current.position[i][j].color == Color.BLACK):
+                string += current.position[i][j].printStr.lower()
+            else:
+                string += current.position[i][j].printStr
+    return string[::-1]
+
 
 number = 0
 current = Board(Color.WHITE)
 current.resetBoard()
 #current.wipeBoard()
-current.position[1][4] = Empty(Color.NONE)
-current.position[6][4] = Empty(Color.NONE)
-current.position[3][4] = Pawn(Color.WHITE)
-current.position[4][4] = Pawn(Color.BLACK)
-printBoard(current)
-current.getNextBoards()
 
-'''
-for x in current.nextBoards:
-    print(x.givenScore)
-    print(x.bonusScore)
+inputBoard = sys.argv[1]
+
+print(sys.argv)
+
+for x in range(0,8):
+    for y in range(0,8):
+        char = inputBoard[x*8+y]
+        if(char == "P"):
+            current.position[x][y] = Pawn(Color.WHITE)
+        if(char == "p"):
+            current.position[x][y] = Pawn(Color.BLACK)
+        if(char == "R"):
+            current.position[x][y] = Rook(Color.WHITE)
+        if(char == "r"):
+            current.position[x][y] = Rook(Color.BLACK)
+        if(char == "B"):
+            current.position[x][y] = Bishop(Color.WHITE)
+        if(char == "b"):
+            current.position[x][y] = Bishop(Color.BLACK)
+        if(char == "Q"):
+            current.position[x][y] = Queen(Color.WHITE)
+        if(char == "q"):
+            current.position[x][y] = Queen(Color.BLACK)
+        if(char == "K"):
+            current.position[x][y] = King(Color.WHITE)
+        if(char == "k"):
+            current.position[x][y] = King(Color.BLACK)
+        if(char == "N"):
+            current.position[x][y] = Night(Color.WHITE)
+        if(char == "n"):
+            current.position[x][y] = Night(Color.BLACK)
+        if(char == "_"):
+            current.position[x][y] = Empty(Color.NONE)
+        
+#current.position[1][4] = Empty(Color.NONE)
+#current.position[6][4] = Empty(Color.NONE)
+#current.position[3][4] = Pawn(Color.WHITE)
+#current.position[4][4] = Pawn(Color.BLACK)
+
+#current.position[2][0] = Queen(Color.BLACK)
+
+#printBoard(current)
+  
+    
 
 '''
 
 start = time.time()
 current.getNextBoards()#White moves
+bestBoard = current.nextBoards[0]
 for x in current.nextBoards:
     x.getNextBoards() #Black moves
     if (len(x.nextBoards) == 0):
@@ -518,7 +564,7 @@ for x in current.nextBoards:
         y.getNextBoards() #White moves
         if (len(y.nextBoards) == 0):
             printBoard(y)
-        highestz = 0
+        highestz = -1111111110
         for z in y.nextBoards:          
             z.getNextBoards() #Black moves
             #print(z.bonusScore)
@@ -539,28 +585,17 @@ for x in current.nextBoards:
         if (y.score < lowesty):
             lowesty = y.score
     x.score = lowesty   
-    print(x.score)  
-    printBoard(x)
+    if(x.score > bestBoard.score):
+        bestBoard = x
+        print(x.score)
         
+print(bestBoard.score)
+printBoard(bestBoard)
+
 print("tryAddBoard number: " + str(timesCalled))
 print("loop time: " + str(totalTime2))
 print("constructor time: " + str(totalTime))
 end = time.time()
 print("Total time: " + str(end - start))
-    
-
-
-
-
 '''
 
-print(current.whiteScore)
-current.countScore()
-print(current.whiteScore)
-print(current.score)
-'''
-
-
-    
-#print(current.i)
-#print(current.position)
