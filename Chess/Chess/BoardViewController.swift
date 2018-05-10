@@ -45,7 +45,7 @@ class BoardViewController: UIViewController {
     let upperCaseCharacterSet = CharacterSet.uppercaseLetters
     let lowerCaseCharacterSet = CharacterSet.lowercaseLetters
     
-    let DEBUGMODE: Bool = false
+    let DEBUGMODE: Bool = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -236,19 +236,6 @@ class BoardViewController: UIViewController {
     //MARK: Server Logic
     
     func updateBoardFromServerResponse() {
-        if let serverResponseString: String = getServerResponse() {
-            board = setUpBoardFromString(boardToSet: board, pieces: serverResponseString)
-            if (inCheck(boardToCheck: board, white: false)) {
-                playerWin()
-            }
-            if (playerCheckmated(boardToCheck: board)) {
-                playerLoss()
-            }
-            refreshBoard()
-        }
-    }
-    
-    func getServerResponse() -> String? {
         if (board.pieceArray[7][0] != "R" || board.pieceArray[7][4] != "K") {
             whiteCanCastleQueen = false
         }
@@ -257,12 +244,12 @@ class BoardViewController: UIViewController {
         }
         let url = "http://1718.lakeside-cs.org/Chess_Project_(better_than_checkers)/spaghetti.php"
         var components: URLComponents = URLComponents(string: url)!
-        components.queryItems = ["toMove": (isPlayingAsWhite ? "true" : "false"), "pieces": board.getString(useUnderscores: true), "castleWhiteKingside" : (whiteCanCastleKing ? "true" : "false"), "castleWhiteQueenside" : (whiteCanCastleQueen ? "true" : "false"), "castleBlackKingside" : (blackCanCastleKing ? "true" : "false"), "castleBlackQueenside" : (blackCanCastleQueen ? "true" : "false")].map { (arg) -> URLQueryItem in
+        components.queryItems = ["pieces": board.getString(useUnderscores: true), "castleWhiteKingside" : (whiteCanCastleKing ? "true" : "false"), "castleWhiteQueenside" : (whiteCanCastleQueen ? "true" : "false"), "castleBlackKingside" : (blackCanCastleKing ? "true" : "false"), "castleBlackQueenside" : (blackCanCastleQueen ? "true" : "false")].map { (arg) -> URLQueryItem in
             let (key, value) = arg
             return URLQueryItem(name: key, value: value)
         }
         let request: URLRequest = URLRequest(url: components.url!)
-        var returnString: String? = nil
+        print(request)
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if(error != nil) {
                 print(error as Any)
@@ -270,10 +257,21 @@ class BoardViewController: UIViewController {
             else {
                 if let content = data {
                     do {
-                        print(content)
-                        //let Json = try JSONSerialization.jsonObject(with: content, options: JSONSerialization.ReadingOptions.mutableContainers) as AnyObject
                         let Json = try JSONSerialization.jsonObject(with: content, options: .allowFragments) as AnyObject
-                        returnString = Json as? String
+                        let returnString: String? = Json as? String
+                        if let unwrappedReturnString = returnString {
+                            DispatchQueue.main.asyncAfter(deadline: .now()) {
+                                print(unwrappedReturnString)
+                                self.board = self.setUpBoardFromString(boardToSet: self.board, pieces: unwrappedReturnString)
+                                self.refreshBoard()
+                                if (self.inCheck(boardToCheck: self.board, white: false)) {
+                                    self.playerWin()
+                                }
+                                if (self.playerCheckmated(boardToCheck: self.board)) {
+                                    self.playerLoss()
+                                }
+                            }
+                        }
                     }
                     catch {
                         print(error)
@@ -282,10 +280,10 @@ class BoardViewController: UIViewController {
             }
         }
         task.resume()
-        return returnString
     }
     
     func playerCheckmated(boardToCheck: chessBoard) -> Bool {
+        refreshBoard()
         if (inCheck(boardToCheck: boardToCheck, white: true)) {
             for row in 0...7 {
                 for col in 0...7 {
@@ -303,10 +301,10 @@ class BoardViewController: UIViewController {
     
     //MARK: Board Logic
     
-    func checkMoveLegal(rowToCheck: Int, colToCheck: Int) -> Bool {
+    func checkMoveLegal(rowFrom: Int, colFrom: Int, rowToCheck: Int, colToCheck: Int) -> Bool {
         tempBoard = setUpBoardFromString(boardToSet: chessBoard(), pieces: board.getString(useUnderscores: false))
-        tempBoard.pieceArray[rowToCheck][colToCheck] = tempBoard.pieceArray[rowSelected][colSelected]
-        tempBoard.pieceArray[rowSelected][colSelected] = " "
+        tempBoard.pieceArray[rowToCheck][colToCheck] = tempBoard.pieceArray[rowFrom][colFrom]
+        tempBoard.pieceArray[rowFrom][colFrom] = " "
         return !inCheck(boardToCheck: tempBoard, white: true)
     }
     
@@ -414,7 +412,7 @@ class BoardViewController: UIViewController {
                 }
             }
             //PAWNS
-            if ((boardContainsSquare(row: king.row - 1, col: king.col - 1) && (white && boardToCheck.pieceArray[king.row - 1][king.col - 1] == "p") || (!white && boardToCheck.pieceArray[king.row - 1][king.col - 1] == "P")) || (boardContainsSquare(row: king.row - 1, col: king.col + 1) && (white && boardToCheck.pieceArray[king.row - 1][king.col + 1] == "p") || (!white && boardToCheck.pieceArray[king.row - 1][king.col + 1] == "P"))) {
+            if ((boardContainsSquare(row: king.row - 1, col: king.col - 1) && ((white && boardToCheck.pieceArray[king.row - 1][king.col - 1] == "p") || (!white && boardToCheck.pieceArray[king.row - 1][king.col - 1] == "P"))) || (boardContainsSquare(row: king.row - 1, col: king.col + 1) && ((white && boardToCheck.pieceArray[king.row - 1][king.col + 1] == "p") || (!white && boardToCheck.pieceArray[king.row - 1][king.col + 1] == "P")))) {
                 return true
             }
             return false
@@ -471,7 +469,7 @@ class BoardViewController: UIViewController {
                 break posColIterator
             }
             else {
-                if (checkMoveLegal(rowToCheck: row, colToCheck: colIterator)) {
+                if (checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: row, colToCheck: colIterator)) {
                     moveArray.append(square(row: row, col: colIterator))
                 }
                 if (board.pieceArray[row][colIterator] != " ") {
@@ -486,7 +484,7 @@ class BoardViewController: UIViewController {
                 break negColIterator
             }
             else {
-                if (checkMoveLegal(rowToCheck: row, colToCheck: colIterator)) {
+                if (checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: row, colToCheck: colIterator)) {
                     moveArray.append(square(row: row, col: colIterator))
                 }
                 if (board.pieceArray[row][colIterator] != " ") {
@@ -501,7 +499,7 @@ class BoardViewController: UIViewController {
                 break posRowIterator
             }
             else {
-                if (checkMoveLegal(rowToCheck: rowIterator, colToCheck: col)) {
+                if (checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: rowIterator, colToCheck: col)) {
                     moveArray.append(square(row: rowIterator, col: col))
                 }
                 if (board.pieceArray[rowIterator][col] != " ") {
@@ -516,7 +514,7 @@ class BoardViewController: UIViewController {
                 break negRowIterator
             }
             else {
-                if (checkMoveLegal(rowToCheck: rowIterator, colToCheck: col)) {
+                if (checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: rowIterator, colToCheck: col)) {
                     moveArray.append(square(row: rowIterator, col: col))
                 }
                 if (board.pieceArray[rowIterator][col] != " ") {
@@ -540,7 +538,7 @@ class BoardViewController: UIViewController {
             if (((option + 1) / 2) % 2 == 1) {
                 colChange = -colChange
             }
-            if (boardContainsSquare(row: row + rowChange, col: col + colChange) && checkMoveLegal(rowToCheck: row + rowChange, colToCheck: col + colChange) && !upperCaseCharacterSet.contains(board.pieceArray[row + rowChange][col + colChange].unicodeScalars.first!)) {
+            if (boardContainsSquare(row: row + rowChange, col: col + colChange) && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: row + rowChange, colToCheck: col + colChange) && !upperCaseCharacterSet.contains(board.pieceArray[row + rowChange][col + colChange].unicodeScalars.first!)) {
                 moveArray.append(square(row: row + rowChange, col: col + colChange))
             }
         }
@@ -558,7 +556,7 @@ class BoardViewController: UIViewController {
                 break NEIterator
             }
             else {
-                if (checkMoveLegal(rowToCheck: rowIterator, colToCheck: colIterator)) {
+                if (checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: rowIterator, colToCheck: colIterator)) {
                     moveArray.append(square(row: rowIterator, col: colIterator))
                 }
                 if (board.pieceArray[rowIterator][colIterator] != " ") {
@@ -575,7 +573,7 @@ class BoardViewController: UIViewController {
                 break SEIterator
             }
             else {
-                if (checkMoveLegal(rowToCheck: rowIterator, colToCheck: colIterator)) {
+                if (checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: rowIterator, colToCheck: colIterator)) {
                     moveArray.append(square(row: rowIterator, col: colIterator))
                 }
                 if (board.pieceArray[rowIterator][colIterator] != " ") {
@@ -592,7 +590,7 @@ class BoardViewController: UIViewController {
                 break SWIterator
             }
             else {
-                if (checkMoveLegal(rowToCheck: rowIterator, colToCheck: colIterator)) {
+                if (checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: rowIterator, colToCheck: colIterator)) {
                     moveArray.append(square(row: rowIterator, col: colIterator))
                 }
                 if (board.pieceArray[rowIterator][colIterator] != " ") {
@@ -609,7 +607,7 @@ class BoardViewController: UIViewController {
                 break NWIterator
             }
             else {
-                if (checkMoveLegal(rowToCheck: rowIterator, colToCheck: colIterator)) {
+                if (checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: rowIterator, colToCheck: colIterator)) {
                     moveArray.append(square(row: rowIterator, col: colIterator))
                 }
                 if (board.pieceArray[rowIterator][colIterator] != " ") {
@@ -624,15 +622,15 @@ class BoardViewController: UIViewController {
         var moveArray: [square] = [square]()
         for rowChange in -1...1 {
             for colChange in -1...1 {
-                if (boardContainsSquare(row: row + rowChange, col: col + colChange) && !upperCaseCharacterSet.contains(board.pieceArray[row + rowChange][col + colChange].unicodeScalars.first!) && checkMoveLegal(rowToCheck: row + rowChange, colToCheck: col + colChange)) {
+                if (boardContainsSquare(row: row + rowChange, col: col + colChange) && !upperCaseCharacterSet.contains(board.pieceArray[row + rowChange][col + colChange].unicodeScalars.first!) && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: row + rowChange, colToCheck: col + colChange)) {
                     moveArray.append(square(row: row + rowChange, col: col + colChange))
                 }
             }
         }
-        if (whiteCanCastleKing && !inCheck(boardToCheck: board, white: true) && board.pieceArray[7][5] == " " && board.pieceArray[7][6] == " " && checkMoveLegal(rowToCheck: 7, colToCheck: 5) && checkMoveLegal(rowToCheck: 7, colToCheck: 6)) {
+        if (whiteCanCastleKing && !inCheck(boardToCheck: board, white: true) && board.pieceArray[7][5] == " " && board.pieceArray[7][6] == " " && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: 7, colToCheck: 5) && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: 7, colToCheck: 6)) {
             moveArray.append(square(row: 7, col: 6))
         }
-        if (whiteCanCastleQueen && !inCheck(boardToCheck: board, white: true) && board.pieceArray[7][3] == " " && board.pieceArray[7][2] == " " && board.pieceArray[7][1] == " " && checkMoveLegal(rowToCheck: 7, colToCheck: 3) && checkMoveLegal(rowToCheck: 7, colToCheck: 2)) {
+        if (whiteCanCastleQueen && !inCheck(boardToCheck: board, white: true) && board.pieceArray[7][3] == " " && board.pieceArray[7][2] == " " && board.pieceArray[7][1] == " " && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: 7, colToCheck: 3) && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: 7, colToCheck: 2)) {
             moveArray.append(square(row: 7, col: 2))
         }
         return moveArray
@@ -640,16 +638,16 @@ class BoardViewController: UIViewController {
     
     func pawnMoveArray(row: Int, col: Int) -> [square] {
         var moveArray: [square] = [square]()
-        if (board.pieceArray[row - 1][col] == " " && checkMoveLegal(rowToCheck: row - 1, colToCheck: col)) {
+        if (board.pieceArray[row - 1][col] == " " && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: row - 1, colToCheck: col)) {
             moveArray.append(square(row: row - 1, col: col))
-            if (row == 6 && board.pieceArray[row-2][col] == " " && checkMoveLegal(rowToCheck: row - 2, colToCheck: col)) {
+            if (row == 6 && board.pieceArray[row-2][col] == " " && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: row - 2, colToCheck: col)) {
                 moveArray.append(square(row: row - 2, col: col))
             }
         }
-        if (boardContainsSquare(row: row - 1, col: col - 1) && lowerCaseCharacterSet.contains(board.pieceArray[row - 1][col - 1].unicodeScalars.first!) && checkMoveLegal(rowToCheck: row - 1, colToCheck: col - 1)) {
+        if (boardContainsSquare(row: row - 1, col: col - 1) && lowerCaseCharacterSet.contains(board.pieceArray[row - 1][col - 1].unicodeScalars.first!) && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: row - 1, colToCheck: col - 1)) {
             moveArray.append(square(row: row - 1, col: col - 1))
         }
-        if (boardContainsSquare(row: row - 1, col: col + 1) && lowerCaseCharacterSet.contains(board.pieceArray[row - 1][col + 1].unicodeScalars.first!) && checkMoveLegal(rowToCheck: row - 1, colToCheck: col + 1)) {
+        if (boardContainsSquare(row: row - 1, col: col + 1) && lowerCaseCharacterSet.contains(board.pieceArray[row - 1][col + 1].unicodeScalars.first!) && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: row - 1, colToCheck: col + 1)) {
             moveArray.append(square(row: row - 1, col: col + 1))
         }
         return moveArray
@@ -659,6 +657,9 @@ class BoardViewController: UIViewController {
         for row in 0...7 {
             for col in 0...7 {
                 boardToSet.pieceArray[row][col] = pieces[pieces.index(pieces.startIndex, offsetBy: row * 8 + col)]
+                if (pieces[pieces.index(pieces.startIndex, offsetBy: row * 8 + col)] == "_") {
+                    boardToSet.pieceArray[row][col] = " "
+                }
             }
         }
         return boardToSet
