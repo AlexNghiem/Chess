@@ -263,12 +263,14 @@ class BoardViewController: UIViewController {
                             DispatchQueue.main.asyncAfter(deadline: .now()) {
                                 print(unwrappedReturnString)
                                 self.board = self.setUpBoardFromString(boardToSet: self.board, pieces: unwrappedReturnString)
-                                self.refreshBoard()
                                 if (self.inCheck(boardToCheck: self.board, white: false)) {
                                     self.playerWin()
                                 }
-                                if (self.playerCheckmated(boardToCheck: self.board)) {
+                                else if (self.playerCheckmated(boardToCheck: self.board)) {
                                     self.playerLoss()
+                                }
+                                else {
+                                    self.refreshBoard()
                                 }
                             }
                         }
