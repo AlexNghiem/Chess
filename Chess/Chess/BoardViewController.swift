@@ -126,6 +126,7 @@ class BoardViewController: UIViewController {
         backButton.addTarget(self, action: #selector(self.backButtonPushed(_:)), for: UIControlEvents.touchUpInside)
         
         let boardImage: UIImageView = UIImageView(image: #imageLiteral(resourceName: "chessBoardImage"))
+        boardImage.transform = CGAffineTransform(scaleX: -1, y: 1)
         boardImage.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(boardImage)
         boardImage.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -4*squareSize).isActive = true
