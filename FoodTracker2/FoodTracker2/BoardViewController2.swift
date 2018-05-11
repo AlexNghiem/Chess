@@ -6,7 +6,6 @@
 //  Copyright © 2018 Alex, Justin, Eric. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
 class BoardViewController2: UIViewController {
