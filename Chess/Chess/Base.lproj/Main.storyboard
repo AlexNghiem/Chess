@@ -51,86 +51,17 @@
                     <view key="view" contentMode="scaleToFill" id="O1g-4Z-W7Y">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FF7-FU-HvE">
-                                <rect key="frame" x="102" y="251" width="171" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pho-ME-Aev">
-                                <rect key="frame" x="123" y="309" width="128" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" red="0.0" green="0.58980089430000004" blue="1" alpha="0.65199593321917804" colorSpace="custom" customColorSpace="sRGB"/>
-                                <state key="normal" title="Login">
-                                    <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                </state>
-                                <connections>
-                                    <action selector="action:" destination="Y6N-q6-4Wp" eventType="touchUpInside" id="BKJ-pn-1hH"/>
-                                </connections>
-                            </button>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="t2T-Wd-x8z">
-                                <rect key="frame" x="123" y="135" width="129" height="29"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <segments>
-                                    <segment title="Login"/>
-                                    <segment title="Register"/>
-                                </segments>
-                            </segmentedControl>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="aPo-Md-7Zb">
-                                <rect key="frame" x="102" y="187" width="171" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                        </subviews>
                         <color key="backgroundColor" red="0.0" green="0.58980089430000004" blue="1" alpha="0.65199593320000004" colorSpace="custom" customColorSpace="sRGB"/>
                         <accessibility key="accessibilityConfiguration" identifier="LoginViewControllerID"/>
                         <viewLayoutGuide key="safeArea" id="f57-cq-LmH"/>
                     </view>
                     <connections>
-                        <outlet property="email" destination="aPo-Md-7Zb" id="3OY-PO-JJY"/>
-                        <outlet property="loginButton" destination="Pho-ME-Aev" id="kQ2-7v-8SL"/>
-                        <outlet property="password" destination="FF7-FU-HvE" id="rB3-CZ-qu4"/>
-                        <outlet property="segmentControl" destination="t2T-Wd-x8z" id="bUU-MY-KRl"/>
-                        <segue destination="7mH-ud-8s2" kind="show" identifier="segue" id="l6e-7L-OMQ"/>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="segue" id="8mf-kM-cNP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DxZ-zO-5jt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1749.5999999999999" y="53.523238380809602"/>
-        </scene>
-        <!--Second View Controller-->
-        <scene sceneID="N9y-z3-cgi">
-            <objects>
-                <viewController id="7mH-ud-8s2" customClass="SecondViewController" customModule="Chess" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="w0s-S7-6z2">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J5j-JX-l64">
-                                <rect key="frame" x="163" y="318" width="48" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Logout"/>
-                                <connections>
-                                    <action selector="logout:" destination="7mH-ud-8s2" eventType="touchUpInside" id="NSN-MX-WRT"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <accessibility key="accessibilityConfiguration" identifier="logout"/>
-                        <viewLayoutGuide key="safeArea" id="rJJ-lC-EjE"/>
-                    </view>
-                    <connections>
-                        <outlet property="logout" destination="J5j-JX-l64" id="dsV-Zc-qcK"/>
-                        <segue destination="BYZ-38-t0r" kind="show" identifier="home" id="Bdf-AL-QNH"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Qa7-uF-A87" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2478" y="54"/>
         </scene>
     </scenes>
 </document>
