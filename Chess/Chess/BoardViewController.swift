@@ -418,6 +418,16 @@ class BoardViewController: UIViewController {
             if ((boardContainsSquare(row: king.row - 1, col: king.col - 1) && ((white && boardToCheck.pieceArray[king.row - 1][king.col - 1] == "p") || (!white && boardToCheck.pieceArray[king.row - 1][king.col - 1] == "P"))) || (boardContainsSquare(row: king.row - 1, col: king.col + 1) && ((white && boardToCheck.pieceArray[king.row - 1][king.col + 1] == "p") || (!white && boardToCheck.pieceArray[king.row - 1][king.col + 1] == "P")))) {
                 return true
             }
+            //KINGS
+            for rowChange in -1...1 {
+                for colChange in -1...1 {
+                    if (boardContainsSquare(row: king.row + rowChange, col: king.col + colChange)) {
+                        if ((white && (boardToCheck.pieceArray[king.row + rowChange][king.col + colChange] == "k")) || (!white && (boardToCheck.pieceArray[king.row + rowChange][king.col + colChange] == "K"))) {
+                            return true
+                        }
+                    }
+                }
+            }
             return false
         }
         else {
@@ -865,7 +875,7 @@ class BoardViewController: UIViewController {
     //MARK: Misc Actions
     
     @IBAction func backButtonPushed(_ sender: UIButton) {
-        performSegue(withIdentifier: "unwindToMainViewController", sender: self)
+        performSegue(withIdentifier: "unwindFromBoardViewControllerToMainViewController", sender: self)
     }
     
     func playerWin() {

@@ -31,26 +31,7 @@ class MainViewController: UIViewController {
             portraitHeight = view.bounds.width
             portraitWidth = view.bounds.height
         }
-        
-        // close intro button
-        
-        
-        closeButton.isHidden = true
-        
-        closeButton.backgroundColor = UIColor.red
-        closeButton.setTitle("X", for : UIControlState.normal)
-        closeButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/48)
-        closeButton.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(closeButton)
-        
-        
-        closeButton.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/2-20).isActive = true
-        closeButton.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/2).isActive = true
-        closeButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 - 10).isActive = true
-        closeButton.heightAnchor.constraint(equalToConstant: 50)
-        closeButton.addTarget(self, action: #selector(self.buttonPressed(_:)), for: .touchUpInside)
 
-        
         //Title box
         let titleBox: UILabel = UILabel(frame: CGRect.zero)
         titleBox.translatesAutoresizingMaskIntoConstraints = false //this allows the later constraints to override the fact that the text view is initialized to a rectangle of size 0
@@ -80,21 +61,21 @@ class MainViewController: UIViewController {
         playButton.addTarget(self, action: #selector(MainViewController.playButtonPushed(_:)), for: UIControlEvents.touchUpInside)
         
         //how to play button
-        let button: UIButton = UIButton(frame: CGRect.zero)
-        view.addSubview(button)
+        let howToPlayButton: UIButton = UIButton(frame: CGRect.zero)
+        view.addSubview(howToPlayButton)
         
-        button.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4).isActive = true
-        button.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4).isActive = true
-        button.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: +portraitHeight/8).isActive = true
-        button.heightAnchor.constraint(equalToConstant: portraitHeight/16).isActive = true
+        howToPlayButton.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4).isActive = true
+        howToPlayButton.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4).isActive = true
+        howToPlayButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: +portraitHeight/8).isActive = true
+        howToPlayButton.heightAnchor.constraint(equalToConstant: portraitHeight/16).isActive = true
         
         
-        button.backgroundColor = UIColor.black
-        button.setTitle("How To Play", for: UIControlState.normal)
-        button.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/24)
-        button.translatesAutoresizingMaskIntoConstraints = false
+        howToPlayButton.backgroundColor = UIColor.black
+        howToPlayButton.setTitle("How To Play", for: UIControlState.normal)
+        howToPlayButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/24)
+        howToPlayButton.translatesAutoresizingMaskIntoConstraints = false
         
-        button.addTarget(self, action: #selector(self.buttonPressed(_:)), for: .touchUpInside)
+        howToPlayButton.addTarget(self, action: #selector(self.howToPlayButtonPushed(_:)), for: .touchUpInside)
         
         //initialize introduction stuff
         self.view.addSubview(introLabel)
@@ -148,22 +129,17 @@ class MainViewController: UIViewController {
         present(view, animated: true, completion: nil)
     }
     
-    @IBAction func unwindToMainViewController(segue: UIStoryboardSegue) {
+    @IBAction func howToPlayButtonPushed(_ sender: UIButton) {
+        let view: UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "HowToPlayID") as UIViewController
+        present(view, animated: true, completion: nil)
+    }
+    
+    @IBAction func unwindFromBoardViewControllerToMainViewController(segue: UIStoryboardSegue) {
         
     }
     
-    @IBAction func buttonPressed(_ sender: UIButton!)
-    {
-        if(introLabel.isHidden == false)
-        {
-            introLabel.isHidden = true;
-            closeButton.isHidden = true;
-        }
-        else
-        {
-            introLabel.isHidden = false;
-            closeButton.isHidden = false;
-        }
+    @IBAction func unwindFromHowToPlayToMainViewController(segue: UIStoryboardSegue) {
+        
     }
 }
 
