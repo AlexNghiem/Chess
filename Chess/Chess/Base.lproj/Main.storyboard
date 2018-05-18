@@ -47,7 +47,6 @@
         <!--Login View Controller-->
         <scene sceneID="Cdb-1a-8FH">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="DxZ-zO-5jt" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="LoginViewControllerID" id="Y6N-q6-4Wp" customClass="LoginViewController" customModule="Chess" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="O1g-4Z-W7Y">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -60,38 +59,9 @@
                         <segue destination="BYZ-38-t0r" kind="show" identifier="segue" id="8mf-kM-cNP"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DxZ-zO-5jt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1749.5999999999999" y="53.523238380809602"/>
-        </scene>
-        <!--Second View Controller-->
-        <scene sceneID="N9y-z3-cgi">
-            <objects>
-                <viewController id="7mH-ud-8s2" customClass="SecondViewController" customModule="Chess" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="w0s-S7-6z2">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J5j-JX-l64">
-                                <rect key="frame" x="163" y="318" width="48" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Logout"/>
-                                <connections>
-                                    <action selector="logout:" destination="7mH-ud-8s2" eventType="touchUpInside" id="NSN-MX-WRT"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <accessibility key="accessibilityConfiguration" identifier="logout"/>
-                        <viewLayoutGuide key="safeArea" id="rJJ-lC-EjE"/>
-                    </view>
-                    <connections>
-                        <outlet property="logout" destination="J5j-JX-l64" id="dsV-Zc-qcK"/>
-                        <segue destination="BYZ-38-t0r" kind="show" identifier="home" id="Bdf-AL-QNH"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Qa7-uF-A87" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2478" y="54"/>
         </scene>
         <!--How To Play-->
         <scene sceneID="FGU-Fg-6Qp">
