@@ -875,7 +875,7 @@ class BoardViewController: UIViewController {
     //MARK: Misc Actions
     
     @IBAction func backButtonPushed(_ sender: UIButton) {
-        performSegue(withIdentifier: "unwindFromBoardViewControllerToMainViewController", sender: self)
+        performSegue(withIdentifier: "unwindFromBoardViewControllerToMainViewControllerID", sender: self)
     }
     
     func playerWin() {
