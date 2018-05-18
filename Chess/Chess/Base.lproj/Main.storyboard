@@ -56,10 +56,11 @@
                         <viewLayoutGuide key="safeArea" id="f57-cq-LmH"/>
                     </view>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="show" identifier="segue" id="8mf-kM-cNP"/>
+                        <segue destination="Gmf-XK-QQn" kind="unwind" identifier="unwindFromLoginViewControllerToMainViewControllerID" unwindAction="unwindFromLoginViewControllerToMainViewControllerWithSegue:" id="KaE-5w-Hhz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DxZ-zO-5jt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="Gmf-XK-QQn" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1749.5999999999999" y="53.523238380809602"/>
         </scene>

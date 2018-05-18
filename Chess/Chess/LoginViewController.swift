@@ -93,7 +93,7 @@ class LoginViewController: UIViewController{
         backButton.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4-50).isActive = true
         backButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 180).isActive = true
         backButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        backButton.addTarget(self, action: #selector(self.backPress(_sender:)), for: .touchUpInside)
+        backButton.addTarget(self, action: #selector(self.backButtonPushed(_:)), for: .touchUpInside)
         
         }
     
@@ -133,8 +133,8 @@ class LoginViewController: UIViewController{
             }
         }
     }
-    @IBAction func backPress (_sender: UIButton){
-        self.performSegue(withIdentifier: "segue", sender: self)
+    @IBAction func backButtonPushed(_ sender: UIButton) {
+        performSegue(withIdentifier: "unwindFromLoginViewControllerToMainViewControllerID", sender: self)
     }
     
 }

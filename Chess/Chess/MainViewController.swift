@@ -119,6 +119,10 @@ class MainViewController: UIViewController {
         
     }
     
+    @IBAction func unwindFromLoginViewControllerToMainViewController(segue: UIStoryboardSegue) {
+        
+    }
+    
     @IBAction func unwindFromHowToPlayToMainViewController(segue: UIStoryboardSegue) {
         
     }
