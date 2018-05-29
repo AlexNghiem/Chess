@@ -8,6 +8,8 @@
 
 import Foundation
 import UIKit
+import Firebase
+import FirebaseAuth
 
 class BoardViewController: UIViewController {
     
@@ -22,8 +24,10 @@ class BoardViewController: UIViewController {
     var colSelected = 0
     var squareSize: CGFloat = 0.0
     
+    let playerBox : UILabel = UILabel()
+    
     var pieceButtonArray = [[UIButton]]()
-    let selectedBox: UIButton = UIButton(frame: CGRect.zero)
+    let selectedBox: UIButton = UIButton()
     var moveOptions = [[UIButton]]()
     var board = chessBoard()
     var tempBoard: chessBoard = chessBoard()
@@ -41,11 +45,12 @@ class BoardViewController: UIViewController {
     var whiteCanCastleQueen = true
     var blackCanCastleKing = true
     var blackCanCastleQueen = true
+    var waiting = false
     
     let upperCaseCharacterSet = CharacterSet.uppercaseLetters
     let lowerCaseCharacterSet = CharacterSet.lowercaseLetters
     
-    let DEBUGMODE: Bool = true
+    let DEBUGMODE: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,6 +67,8 @@ class BoardViewController: UIViewController {
         }
         squareSize = portraitWidth/10
         promoteOptionSize = squareSize * 1.5
+        
+        showPlayerName()
         
         selectedBox.backgroundColor = UIColor.yellow.withAlphaComponent(0.5)
         selectedBox.translatesAutoresizingMaskIntoConstraints = false
@@ -273,6 +280,7 @@ class BoardViewController: UIViewController {
                                 else {
                                     self.refreshBoard()
                                 }
+                                self.waiting = false
                             }
                         }
                     }
@@ -727,6 +735,7 @@ class BoardViewController: UIViewController {
     //MARK: Selecting square
     
     @IBAction func moveOptionSelected(_ sender: option) {
+        waiting = true
         clearOptions()
         if (board.pieceArray[rowSelected][colSelected] == "P") {
             if (sender.row == 0) {
@@ -769,7 +778,7 @@ class BoardViewController: UIViewController {
     
     @IBAction func chessPiecePushed(_ sender: piece) {
         print("row: " + String((sender).rowCoord) + ", col: " + String((sender).colCoord))
-        if (!pieceIsSelected) {
+        if (!waiting && !pieceIsSelected) {
             if (DEBUGMODE && board.pieceArray[sender.rowCoord][sender.colCoord] != " ") {
                 selectSquare(row: (sender).rowCoord, col: (sender).colCoord)
             }
@@ -873,6 +882,26 @@ class BoardViewController: UIViewController {
     }
     
     //MARK: Misc Actions
+    
+    func showPlayerName() {
+        playerBox.translatesAutoresizingMaskIntoConstraints = false
+        if(Auth.auth().currentUser == nil)
+        {
+            playerBox.text = "Playing as: Guest"
+        }
+        else
+        {
+            playerBox.text = "Playing as: " + (Auth.auth().currentUser?.email)!
+        }
+        
+        playerBox.font = UIFont(name: "Helvetica", size: portraitHeight/36)
+        playerBox.textColor = UIColor.white
+        playerBox.textAlignment = NSTextAlignment.center
+        view.addSubview(playerBox)
+        playerBox.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/3).isActive = true
+        playerBox.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/3).isActive = true
+        playerBox.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight*2/5).isActive = true
+    }
     
     @IBAction func backButtonPushed(_ sender: UIButton) {
         performSegue(withIdentifier: "unwindFromBoardViewControllerToMainViewControllerID", sender: self)
