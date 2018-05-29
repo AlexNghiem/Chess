@@ -22,7 +22,8 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let user = Auth.auth().currentUser
-        view.backgroundColor = UIColor.blue
+        view.backgroundColor = UIColor.darkGray
+
         
         //Update variables
         margins = view.layoutMarginsGuide
