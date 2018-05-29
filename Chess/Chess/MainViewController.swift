@@ -16,7 +16,9 @@ class MainViewController: UIViewController {
     var margins: UILayoutGuide = UILayoutGuide()
     var portraitHeight: CGFloat = 0
     var portraitWidth: CGFloat = 0
-    
+    let playerBox : UILabel = UILabel(frame:CGRect.zero)
+    let loginButton: UIButton = UIButton(frame: CGRect.zero)
+
     
     
     override func viewDidLoad() {
@@ -34,7 +36,6 @@ class MainViewController: UIViewController {
             portraitWidth = view.bounds.height
         }
         //Player Box
-        let playerBox : UILabel = UILabel(frame:CGRect.zero)
         playerBox.translatesAutoresizingMaskIntoConstraints = false
         if(user == nil)
         {
@@ -100,7 +101,6 @@ class MainViewController: UIViewController {
         howToPlayButton.addTarget(self, action: #selector(self.howToPlayButtonPushed(_:)), for: .touchUpInside)
         
         //login stuff
-        let loginButton: UIButton = UIButton(frame: CGRect.zero)
         loginButton.backgroundColor = UIColor.black
         if(user == nil)
         {
@@ -125,6 +125,19 @@ class MainViewController: UIViewController {
 
 
     }
+    
+    func fixThings() {
+        if(Auth.auth().currentUser == nil)
+        {
+            playerBox.text = "Playing as: Guest"
+            loginButton.setTitle("Login", for: UIControlState.normal)
+        }
+        else
+        {
+            playerBox.text = "Playing as: " + (Auth.auth().currentUser?.email)!
+            loginButton.setTitle("Logout", for: UIControlState.normal)
+        }
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -148,7 +161,7 @@ class MainViewController: UIViewController {
             do
             {
                 try Auth.auth().signOut()
-                self.view.setNeedsDisplay()
+                fixThings()
             }
             catch let signOutError as NSError
             {
@@ -167,7 +180,7 @@ class MainViewController: UIViewController {
     }
     
     @IBAction func unwindFromLoginViewControllerToMainViewController(segue: UIStoryboardSegue) {
-        
+        fixThings()
     }
     
     @IBAction func unwindFromHowToPlayToMainViewController(segue: UIStoryboardSegue) {

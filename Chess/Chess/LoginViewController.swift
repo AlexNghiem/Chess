@@ -27,6 +27,7 @@ class LoginViewController: UIViewController{
     let backButton = UIButton()
 
     override func viewDidLoad() {
+        segmentControl.selectedSegmentIndex = 0
         view.backgroundColor = UIColor.white
         //Update variables
         margins = view.layoutMarginsGuide
@@ -76,7 +77,7 @@ class LoginViewController: UIViewController{
         password.heightAnchor.constraint(equalToConstant: 35).isActive = true
 
         loginButton.translatesAutoresizingMaskIntoConstraints = false
-        loginButton.setTitle("Login", for: UIControlState.normal)
+        loginButton.setTitle("Submit", for: UIControlState.normal)
         loginButton.backgroundColor = UIColor.blue
         self.view.addSubview(loginButton)
         loginButton.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4+50).isActive = true
