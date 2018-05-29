@@ -50,7 +50,7 @@ class MainViewController: UIViewController {
         view.addSubview(playerBox)
         playerBox.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/3).isActive = true
         playerBox.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/3).isActive = true
-        playerBox.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 - portraitHeight/10).isActive = true
+        playerBox.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 - portraitHeight/8).isActive = true
         playerBox.bottomAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 + portraitHeight/10).isActive = true
         //Title box
         
