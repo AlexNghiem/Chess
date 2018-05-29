@@ -28,7 +28,7 @@ class LoginViewController: UIViewController{
 
     override func viewDidLoad() {
         segmentControl.selectedSegmentIndex = 0
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.lightGray
         //Update variables
         margins = view.layoutMarginsGuide
         portraitHeight = view.bounds.height
@@ -42,6 +42,10 @@ class LoginViewController: UIViewController{
 
         
         segmentControl.translatesAutoresizingMaskIntoConstraints = false
+        segmentControl.tintColor = UIColor.black
+        segmentControl.backgroundColor = UIColor.lightGray
+        let font: [AnyHashable : Any] = [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 16)]
+        segmentControl.setTitleTextAttributes(font, for: .normal)
         self.view.addSubview(segmentControl)
         
         segmentControl.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4 + 20).isActive = true
@@ -51,48 +55,50 @@ class LoginViewController: UIViewController{
         
         
         email.translatesAutoresizingMaskIntoConstraints = false
+        email.tintColor = UIColor.black
         email.autocapitalizationType = .none
         self.view.addSubview(email)
-        email.layer.borderColor = UIColor.blue.cgColor
+        email.layer.borderColor = UIColor.black.cgColor
         email.layer.borderWidth = 1.0
         email.placeholder = "Email"
         
-        email.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4).isActive = true
-        email.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4).isActive = true
+        email.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4-20).isActive = true
+        email.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4+20).isActive = true
         email.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 40).isActive = true
         email.heightAnchor.constraint(equalToConstant: 35).isActive = true
         
 
         password.translatesAutoresizingMaskIntoConstraints = false
+        password.tintColor = UIColor.black
         password.autocapitalizationType = .none
         self.view.addSubview(password)
-        password.layer.borderColor = UIColor.blue.cgColor
+        password.layer.borderColor = UIColor.black.cgColor
         password.layer.borderWidth = 1.0
         password.placeholder = "Password"
         password.isSecureTextEntry = true
         
-        password.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4).isActive = true
-        password.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4).isActive = true
-        password.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 80).isActive = true
+        password.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4-20).isActive = true
+        password.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4+20).isActive = true
+        password.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 100).isActive = true
         password.heightAnchor.constraint(equalToConstant: 35).isActive = true
 
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         loginButton.setTitle("Submit", for: UIControlState.normal)
-        loginButton.backgroundColor = UIColor.blue
+        loginButton.backgroundColor = UIColor.darkGray
         self.view.addSubview(loginButton)
         loginButton.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4+50).isActive = true
         loginButton.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4-50).isActive = true
-        loginButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 120).isActive = true
+        loginButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 160).isActive = true
         loginButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         loginButton.addTarget(self, action: #selector(self.loginPress(_:)), for: .touchUpInside)
         
         backButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.setTitle("Back", for: UIControlState.normal)
-        backButton.backgroundColor = UIColor.blue
+        backButton.backgroundColor = UIColor.darkGray
         self.view.addSubview(backButton)
         backButton.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4+50).isActive = true
         backButton.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4-50).isActive = true
-        backButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 180).isActive = true
+        backButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 200).isActive = true
         backButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         backButton.addTarget(self, action: #selector(self.backButtonPushed(_:)), for: .touchUpInside)
         
