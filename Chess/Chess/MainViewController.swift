@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseAuth
 
 class MainViewController: UIViewController {
 
@@ -15,10 +17,11 @@ class MainViewController: UIViewController {
     var portraitHeight: CGFloat = 0
     var portraitWidth: CGFloat = 0
     
-    // initialize intro label
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let user = Auth.auth().currentUser
         view.backgroundColor = UIColor.blue
         
         //Update variables
@@ -29,8 +32,28 @@ class MainViewController: UIViewController {
             portraitHeight = view.bounds.width
             portraitWidth = view.bounds.height
         }
-
+        //Player Box
+        let playerBox : UILabel = UILabel(frame:CGRect.zero)
+        playerBox.translatesAutoresizingMaskIntoConstraints = false
+        if(user == nil)
+        {
+            playerBox.text = "Playing as: Guest"
+        }
+        else
+        {
+            playerBox.text = "Playing as: " + (user?.email)!
+        }
+        
+        playerBox.font = UIFont(name: "Helvetica", size: portraitHeight/36)
+        playerBox.textColor = UIColor.white
+        playerBox.textAlignment = NSTextAlignment.center
+        view.addSubview(playerBox)
+        playerBox.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/3).isActive = true
+        playerBox.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/3).isActive = true
+        playerBox.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 - portraitHeight/10).isActive = true
+        playerBox.bottomAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 + portraitHeight/10).isActive = true
         //Title box
+        
         let titleBox: UILabel = UILabel(frame: CGRect.zero)
         titleBox.translatesAutoresizingMaskIntoConstraints = false
         titleBox.text = "Chess"
@@ -78,7 +101,14 @@ class MainViewController: UIViewController {
         //login stuff
         let loginButton: UIButton = UIButton(frame: CGRect.zero)
         loginButton.backgroundColor = UIColor.black
-        loginButton.setTitle("Login", for: UIControlState.normal)
+        if(user == nil)
+        {
+            loginButton.setTitle("Login", for: UIControlState.normal)
+        }
+        else
+        {
+            loginButton.setTitle("Logout", for: UIControlState.normal)
+        }
         loginButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/24)
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         
@@ -90,6 +120,7 @@ class MainViewController: UIViewController {
         loginButton.heightAnchor.constraint(equalToConstant: portraitHeight/10)
         
         loginButton.addTarget(self, action: #selector(MainViewController.loginButtonPushed(_:)), for: UIControlEvents.touchUpInside)
+        
 
 
     }
@@ -106,8 +137,23 @@ class MainViewController: UIViewController {
     }
     
     @IBAction func loginButtonPushed (_ sender: UIButton) {
+        if(Auth.auth().currentUser == nil)
+        {
         let view: UIViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "LoginViewControllerID") as UIViewController
         present(view, animated: true, completion: nil)
+        }
+        else
+        {
+            do
+            {
+                try Auth.auth().signOut()
+                self.view.setNeedsDisplay()
+            }
+            catch let signOutError as NSError
+            {
+                print(signOutError)
+            }
+        }
     }
     
     @IBAction func howToPlayButtonPushed(_ sender: UIButton) {

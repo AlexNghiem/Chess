@@ -109,7 +109,8 @@ class LoginViewController: UIViewController{
                 Auth.auth().signIn(withEmail: email.text!, password: password.text!) {user, error in
                     if (user != nil)
                     {
-                        self.performSegue(withIdentifier: "segue", sender: self)
+                        print("Success")
+                        self.performSegue(withIdentifier: "unwindFromLoginViewControllerToMainViewControllerID", sender: self)
                     }
                     else
                     {
@@ -122,7 +123,7 @@ class LoginViewController: UIViewController{
                 Auth.auth().createUser(withEmail: email.text!, password: password.text!){user, error in
                     if error == nil && user != nil
                     {
-                        self.performSegue(withIdentifier: "segue", sender: self)
+                        self.performSegue(withIdentifier: "unwindFromLoginViewControllerToMainViewControllerID", sender: self)
                     }
                     else
                     {
@@ -136,6 +137,7 @@ class LoginViewController: UIViewController{
     @IBAction func backButtonPushed(_ sender: UIButton) {
         performSegue(withIdentifier: "unwindFromLoginViewControllerToMainViewControllerID", sender: self)
     }
+
     
 }
 
