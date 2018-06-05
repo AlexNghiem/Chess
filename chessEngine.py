@@ -13,7 +13,6 @@ import itertools
 import json as js
 import sys
 
-
 def isOnBoard(x,y):
     return (x >= 0 and x <= 7 and y >= 0 and y<=7)
 
@@ -269,7 +268,7 @@ class Board:
                                     if(i+1 == 7):
                                         newBoard = self.deepCopy()
                                         newBoard.nextBoards = []
-                                        newBoard.position[i][j] = Empty(Color.NONE)
+                                        newBoard.position[i][j] = self.empty
                                         newBoard.position[i+1][j] = Queen(self.currentTurn)
                                         #newBoard.countScore()
                                         if(self.currentTurn == Color.WHITE):
@@ -284,7 +283,7 @@ class Board:
                                     if(i+1 == 7):
                                         newBoard = self.deepCopy()
                                         newBoard.nextBoards = []
-                                        newBoard.position[i][j] = Empty(Color.NONE)
+                                        newBoard.position[i][j] = self.empty
                                         newBoard.position[i+1][j+1] = Queen(self.currentTurn)
                                         #newBoard.countScore()
                                         if(self.currentTurn == Color.WHITE):
@@ -299,7 +298,7 @@ class Board:
                                     if(i+1 == 7):
                                         newBoard = self.deepCopy()
                                         newBoard.nextBoards = []
-                                        newBoard.position[i][j] = Empty(Color.NONE)
+                                        newBoard.position[i][j] = self.empty
                                         newBoard.position[i+1][j-1] = Queen(self.currentTurn)
                                         #newBoard.countScore()
                                         if(self.currentTurn == Color.WHITE):
@@ -316,7 +315,7 @@ class Board:
                                     if(i-1 == 0):
                                         newBoard = self.deepCopy()
                                         newBoard.nextBoards = []
-                                        newBoard.position[i][j] = Empty(Color.NONE)
+                                        newBoard.position[i][j] = self.empty
                                         newBoard.position[i-1][j] = Queen(self.currentTurn)
                                         #newBoard.countScore()
                                         if(self.currentTurn == Color.WHITE):
@@ -327,11 +326,11 @@ class Board:
                                         
                                 if(isOnBoard(i-1,j+1) and self.position[i-1][j+1].color != self.currentTurn and self.position[i-1][j+1].color != Color.NONE):
                                     if(i-1 > 0):
-                                        self.tryAddBoard(i,j,i+1,j+1)                                  
+                                        self.tryAddBoard(i,j,i-1,j+1)                                  
                                     if(i-1 == 0):
                                         newBoard = self.deepCopy()
                                         newBoard.nextBoards = []
-                                        newBoard.position[i][j] = Empty(Color.NONE)
+                                        newBoard.position[i][j] = self.empty
                                         newBoard.position[i-1][j+1] = Queen(self.currentTurn)
                                         #newBoard.countScore()
                                         if(self.currentTurn == Color.WHITE):
@@ -346,7 +345,7 @@ class Board:
                                     if(i-1 == 0):
                                         newBoard = self.deepCopy()
                                         newBoard.nextBoards = []
-                                        newBoard.position[i][j] = Empty(Color.NONE)
+                                        newBoard.position[i][j] = self.empty
                                         newBoard.position[i-1][j-1] = Queen(self.currentTurn)
                                         #newBoard.countScore()
                                         if(self.currentTurn == Color.WHITE):
@@ -363,25 +362,24 @@ class Board:
                                 self.tryAddBoard(i,j,i+2,j)
     
     def tryAddBoard(self,i,j,x,y):
-        global totalTime
-        global timesCalled
         if(isOnBoard(x,y) and self.position[x][y].color != self.currentTurn):
             #startTime = time.time()
             newBoard = self.deepCopy()
+            position = self.position
 
             #totalTime += time.time() - startTime
             newBoard.nextBoards = []
-            b = (type(self.position[x][y]) is Empty)
-            if(type(self.position[i][j]) is Pawn or type(self.position[i][j]) is Rook or type(self.position[i][j]) is King):
+            b = (type(position[x][y]) is Empty)
+            if(type(position[i][j]) is Pawn or type(position[i][j]) is Rook or type(self.position[i][j]) is King):
                 newBoard.position[i][j].hasMoved = True
-            if(type(self.position[x][y]) is King):
+            if(type(position[x][y]) is King):
                 newBoard.over = True
             newBoard.position[x][y] = newBoard.position[i][j]
-            newBoard.position[i][j] = Empty(Color.NONE)
+            newBoard.position[i][j] = self.empty
             
             #slow cause happens every time...
             #print(newBoard.score)
-            newBoard.countScore()
+            newBoard.score = sum([piece.value if piece.color == newBoard.playingAs else piece.value*-1 for piece in itertools.chain.from_iterable(newBoard.position)])
             
             #print(newBoard.score)
             
@@ -428,18 +426,13 @@ class Board:
                         whiteking = False
         if(whiteking or blackking):
             self.over = True
-
-    def wipeBoard(self):
-        for i in range (0,8):
-            for j in range (0,8):
-                self.position[i][j] = Empty(Color.NONE)
     
     def deepCopy(self):
         #global totalTime
         #global totalTime2
         #global timesCalled
         #startTime = time.time()
-        current = Board(self.playingAs)
+        current = Board(self.playingAs,self.empty)
         #totalTime += time.time() - startTime
         #startTime = time.time()
         #print("Before")
@@ -447,7 +440,9 @@ class Board:
         
         
         
-        current.position = [x[:] for x in self.position]
+        current.position = list(map(list,self.position))
+        #[x[:] for x in self.position]
+        
         #for i in range (0,len(self.position)):
             #for j in range (0,len(self.position[i])):
                 #current.position[i][j] = self.position[i][j]
@@ -462,20 +457,30 @@ class Board:
         #totalTime2 += time.time() - startTime
         return current
     
-    def __init__(self,playingAs):
+    def __init__(self,playingAs,empty):
         #TODO might be slow
         #global totalTime
         #global totalTime2
         #global timesCalled
-        self.playingAs = playingAs
-        self.position = [[[] for i in range(8)] for k in range(8)]
-        self.score = 0
-        self.over = False
-        self.inCheck = Color.NONE #is a Color if true
-        self.currentTurn = playingAs
-        self.nextBoards = []
-        self.bonusScore = [0,0]
-        self.givenScore = [0,0]
+        blah = self
+        blah.playingAs = playingAs
+        blah.position = [[[],[],[],[],[],[],[],[]],
+                         [[],[],[],[],[],[],[],[]],
+                         [[],[],[],[],[],[],[],[]],
+                         [[],[],[],[],[],[],[],[]],
+                         [[],[],[],[],[],[],[],[]],
+                         [[],[],[],[],[],[],[],[]],
+                         [[],[],[],[],[],[],[],[]],
+                         [[],[],[],[],[],[],[],[]]]
+        #[[[] for i in range(8)] for k in range(8)]
+        blah.score = 0
+        blah.over = False
+        blah.inCheck = Color.NONE #is a Color if true
+        blah.currentTurn = playingAs
+        blah.nextBoards = []
+        blah.bonusScore = [0,0]
+        blah.givenScore = [0,0]
+        blah.empty = empty
         #startTime = time.time()        
         #self.position = np.array(self.position)
         #totalTime += time.time() - startTime
@@ -499,103 +504,4 @@ def stringBoard(current):
                 string += current.position[i][j].printStr
     return string[::-1]
 
-
-number = 0
-current = Board(Color.WHITE)
-current.resetBoard()
-#current.wipeBoard()
-
-inputBoard = sys.argv[1]
-
-print(sys.argv)
-
-for x in range(0,8):
-    for y in range(0,8):
-        char = inputBoard[x*8+y]
-        if(char == "P"):
-            current.position[x][y] = Pawn(Color.WHITE)
-        if(char == "p"):
-            current.position[x][y] = Pawn(Color.BLACK)
-        if(char == "R"):
-            current.position[x][y] = Rook(Color.WHITE)
-        if(char == "r"):
-            current.position[x][y] = Rook(Color.BLACK)
-        if(char == "B"):
-            current.position[x][y] = Bishop(Color.WHITE)
-        if(char == "b"):
-            current.position[x][y] = Bishop(Color.BLACK)
-        if(char == "Q"):
-            current.position[x][y] = Queen(Color.WHITE)
-        if(char == "q"):
-            current.position[x][y] = Queen(Color.BLACK)
-        if(char == "K"):
-            current.position[x][y] = King(Color.WHITE)
-        if(char == "k"):
-            current.position[x][y] = King(Color.BLACK)
-        if(char == "N"):
-            current.position[x][y] = Night(Color.WHITE)
-        if(char == "n"):
-            current.position[x][y] = Night(Color.BLACK)
-        if(char == "_"):
-            current.position[x][y] = Empty(Color.NONE)
-        
-#current.position[1][4] = Empty(Color.NONE)
-#current.position[6][4] = Empty(Color.NONE)
-#current.position[3][4] = Pawn(Color.WHITE)
-#current.position[4][4] = Pawn(Color.BLACK)
-
-#current.position[2][0] = Queen(Color.BLACK)
-
-#printBoard(current)
-  
-    
-
-'''
-
-start = time.time()
-current.getNextBoards()#White moves
-bestBoard = current.nextBoards[0]
-for x in current.nextBoards:
-    x.getNextBoards() #Black moves
-    if (len(x.nextBoards) == 0):
-            printBoard(x)
-    lowesty = 10000000
-    for y in x.nextBoards:
-        y.getNextBoards() #White moves
-        if (len(y.nextBoards) == 0):
-            printBoard(y)
-        highestz = -1111111110
-        for z in y.nextBoards:          
-            z.getNextBoards() #Black moves
-            #print(z.bonusScore)
-            #print(z.nextBoards[0].givenScore[1])
-            #print(z.nextBoards[4].givenScore[1])
-            #print(z.nextBoards[8].givenScore[1])
-            if(len(z.nextBoards) > 0):
-                lowestw = z.nextBoards[0].score + z.nextBoards[0].givenScore[1]
-            for w in z.nextBoards:
-                if (w.score + w.givenScore[1] < lowestw):
-                    lowestw = w.score + w.givenScore[1]
-                    #print(w.givenScore[1])
-            z.score = lowestw
-            #print (z.score)
-            if (z.score > highestz):
-                highestz = z.score
-        y.score = highestz
-        if (y.score < lowesty):
-            lowesty = y.score
-    x.score = lowesty   
-    if(x.score > bestBoard.score):
-        bestBoard = x
-        print(x.score)
-        
-print(bestBoard.score)
-printBoard(bestBoard)
-
-print("tryAddBoard number: " + str(timesCalled))
-print("loop time: " + str(totalTime2))
-print("constructor time: " + str(totalTime))
-end = time.time()
-print("Total time: " + str(end - start))
-'''
 

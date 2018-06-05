@@ -1,6 +1,6 @@
 <?php
 	
-	$s = 'python3 ./depthSearch.py ' . $_GET['pieces'] . ' ' . $_GET['castleWhiteQueenside'] . ' ' . $_GET['castleWhiteKingside'] . ' ' . $_GET['castleBlackQueenside'] . ' ' . $_GET['castleBlackKingside'];
+	$s = 'pypy3 ./depthSearch.py ' . $_GET['pieces'] . ' ' . $_GET['castleWhiteQueenside'] . ' ' . $_GET['castleWhiteKingside'] . ' ' . $_GET['castleBlackQueenside'] . ' ' . $_GET['castleBlackKingside'];
 	//echo($s);
 	//echo("\n");
 	$raw = exec($s); 
