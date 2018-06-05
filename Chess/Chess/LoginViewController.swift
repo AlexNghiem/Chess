@@ -14,7 +14,7 @@ import FirebaseAuth
 class LoginViewController: UIViewController{
     
     //MARK: variable initialization
-    var margins: UILayoutGuide? = nil
+    var margins = UILayoutGuide()
     var portraitHeight: CGFloat = 0
     var portraitWidth: CGFloat = 0
     
@@ -48,9 +48,10 @@ class LoginViewController: UIViewController{
         segmentControl.setTitleTextAttributes(font, for: .normal)
         self.view.addSubview(segmentControl)
         
-        segmentControl.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4 + 20).isActive = true
-        segmentControl.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4-20).isActive = true
-        segmentControl.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 - 10).isActive = true
+        //random constants to make it look good for the demo.. these can be fiddled with and *should* be programmatic in the future
+        segmentControl.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/4 + 20).isActive = true
+        segmentControl.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/4-20).isActive = true
+        segmentControl.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 - 10).isActive = true
         segmentControl.heightAnchor.constraint(equalToConstant: 50)
         
         
@@ -60,11 +61,13 @@ class LoginViewController: UIViewController{
         self.view.addSubview(email)
         email.layer.borderColor = UIColor.black.cgColor
         email.layer.borderWidth = 1.0
-        email.placeholder = "Email"
+        email.attributedPlaceholder = NSAttributedString(string: "Email", attributes: [NSAttributedStringKey.foregroundColor: UIColor.darkGray])
+        email.keyboardType = UIKeyboardType.emailAddress
         
-        email.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4-20).isActive = true
-        email.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4+20).isActive = true
-        email.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 40).isActive = true
+        //random constants to make it look good for the demo.. these can be fiddled with and *should* be programmatic in the future
+        email.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/3).isActive = true
+        email.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/3).isActive = true
+        email.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 + 40).isActive = true
         email.heightAnchor.constraint(equalToConstant: 35).isActive = true
         
 
@@ -74,21 +77,23 @@ class LoginViewController: UIViewController{
         self.view.addSubview(password)
         password.layer.borderColor = UIColor.black.cgColor
         password.layer.borderWidth = 1.0
-        password.placeholder = "Password"
+        password.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSAttributedStringKey.foregroundColor: UIColor.darkGray])
         password.isSecureTextEntry = true
         
-        password.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4-20).isActive = true
-        password.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4+20).isActive = true
-        password.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 100).isActive = true
+        //random constants to make it look good for the demo.. these can be fiddled with and *should* be programmatic in the future
+        password.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/3).isActive = true
+        password.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/3).isActive = true
+        password.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 + 100).isActive = true
         password.heightAnchor.constraint(equalToConstant: 35).isActive = true
 
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         loginButton.setTitle("Submit", for: UIControlState.normal)
         loginButton.backgroundColor = UIColor.darkGray
         self.view.addSubview(loginButton)
-        loginButton.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4+50).isActive = true
-        loginButton.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4-50).isActive = true
-        loginButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 160).isActive = true
+        //random constants to make it look good for the demo.. these can be fiddled with and *should* be programmatic in the future
+        loginButton.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/4+50).isActive = true
+        loginButton.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/4-50).isActive = true
+        loginButton.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 + 160).isActive = true
         loginButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         loginButton.addTarget(self, action: #selector(self.loginPress(_:)), for: .touchUpInside)
         
@@ -96,9 +101,10 @@ class LoginViewController: UIViewController{
         backButton.setTitle("Back", for: UIControlState.normal)
         backButton.backgroundColor = UIColor.darkGray
         self.view.addSubview(backButton)
-        backButton.leadingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: -portraitWidth/4+50).isActive = true
-        backButton.trailingAnchor.constraint(equalTo: (margins?.centerXAnchor)!, constant: +portraitWidth/4-50).isActive = true
-        backButton.topAnchor.constraint(equalTo: (margins?.centerYAnchor)!, constant: -portraitHeight/4 + 200).isActive = true
+        //random constants to make it look good for the demo.. these can be fiddled with and *should* be programmatic in the future
+        backButton.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/4+50).isActive = true
+        backButton.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/4-50).isActive = true
+        backButton.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: 30).isActive = true
         backButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         backButton.addTarget(self, action: #selector(self.backButtonPushed(_:)), for: .touchUpInside)
         

@@ -24,37 +24,38 @@ class BoardViewController: UIViewController {
     var colSelected = 0
     var squareSize: CGFloat = 0.0
     
-    let playerBox : UILabel = UILabel()
+    let playerBox : UILabel = UILabel() //shows user id
     
-    var pieceButtonArray = [[UIButton]]()
-    let selectedBox: UIButton = UIButton()
-    var moveOptions = [[UIButton]]()
+    var pieceButtonArray = [[UIButton]]() //the piece buttons
+    let selectedBox: UIButton = UIButton() //the orange box which shows which piece is being selected
+    var moveOptions = [[UIButton]]() //the buttons which show up when a piece is selected showing legal moves
     var board = chessBoard()
     var tempBoard: chessBoard = chessBoard()
     
-    let cancelPromoteOption: UIButton = UIButton(frame: CGRect.zero)
-    let knightPromoteOption: UIButton = UIButton(frame: CGRect.zero)
-    let bishopPromoteOption: UIButton = UIButton(frame: CGRect.zero)
-    let rookPromoteOption: UIButton = UIButton(frame: CGRect.zero)
-    let queenPromoteOption: UIButton = UIButton(frame: CGRect.zero)
+    //promotion options
+    let cancelPromoteOption: UIButton = UIButton()
+    let knightPromoteOption: UIButton = UIButton()
+    let bishopPromoteOption: UIButton = UIButton()
+    let rookPromoteOption: UIButton = UIButton()
+    let queenPromoteOption: UIButton = UIButton()
     var colToPromote: Int = 0
     var promoteOptionSize: CGFloat = 0
     
+    //random important things to store
     let isPlayingAsWhite = true
     var whiteCanCastleKing = true
     var whiteCanCastleQueen = true
     var blackCanCastleKing = true
     var blackCanCastleQueen = true
-    var waiting = false
+    var waiting = false //whether the player is waiting for the computer to make a move
     
     let upperCaseCharacterSet = CharacterSet.uppercaseLetters
     let lowerCaseCharacterSet = CharacterSet.lowercaseLetters
     
-    let DEBUGMODE: Bool = false
+    let DEBUGMODE: Bool = true //set to true to make illegal moves, or moves while the computer is thinking (for testing), otherwise for actual play set to false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = UIColor.darkGray
         
         //Update variables
@@ -65,15 +66,69 @@ class BoardViewController: UIViewController {
             portraitHeight = view.bounds.width
             portraitWidth = view.bounds.height
         }
-        squareSize = portraitWidth/10
-        promoteOptionSize = squareSize * 1.5
+        squareSize = portraitWidth/10 //this is the size of a square on the board
+        promoteOptionSize = squareSize * 1.5 //size of the promotion option buttons
         
         showPlayerName()
         
-        selectedBox.backgroundColor = UIColor.yellow.withAlphaComponent(0.5)
+        selectedBox.backgroundColor = UIColor.yellow.withAlphaComponent(0.5) //slightly translucent yellow box
         selectedBox.translatesAutoresizingMaskIntoConstraints = false
         selectedBox.isHidden = true
         
+        //back button
+        let backButton = UIButton()
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        backButton.setTitle("back", for: UIControlState.normal)
+        backButton.titleLabel?.font = UIFont(name: "Calibri", size: portraitHeight/10) // 1/10 of the height tall
+        backButton.backgroundColor = UIColor.white
+        backButton.setTitleColor(UIColor.black, for: UIControlState.normal)
+        view.addSubview(backButton)
+        backButton.leadingAnchor.constraint(equalTo: margins.leadingAnchor, constant: portraitWidth/10).isActive = true // 1/10 of the way from the margin
+        backButton.trailingAnchor.constraint(equalTo: margins.trailingAnchor, constant: -portraitWidth/10).isActive = true // 1/10 of the way from the margin
+        backButton.topAnchor.constraint(equalTo: margins.bottomAnchor, constant: -portraitHeight/5).isActive = true // 1/5 of the way above the bottom
+        backButton.heightAnchor.constraint(equalToConstant: portraitHeight/10) // 1/10 of the height tall
+        backButton.addTarget(self, action: #selector(self.backButtonPushed(_:)), for: UIControlEvents.touchUpInside)
+        
+        let boardImage: UIImageView = UIImageView(image: #imageLiteral(resourceName: "chessBoardImage"))
+        boardImage.transform = CGAffineTransform(scaleX: -1, y: 1) //the picture is not mirrored properly so this transforms it
+        boardImage.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(boardImage)
+        boardImage.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -4*squareSize).isActive = true //center of screen is to the top left of (4,6) on the board
+        boardImage.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: (-4-2)*squareSize).isActive = true //center of screen is to the top left of (4,6) on the board
+        boardImage.heightAnchor.constraint(equalToConstant: squareSize*8).isActive = true
+        boardImage.widthAnchor.constraint(equalToConstant: squareSize*8).isActive = true
+
+        //places the buttons on each square
+        for row in 0...7 {
+            var tempButtonRow = [UIButton]()
+            var tempViewRow = [UIButton]()
+            for col in 0...7 {
+                let newPiece = piece(row: row, col: col)
+                newPiece.translatesAutoresizingMaskIntoConstraints = false
+                view.addSubview(newPiece)
+                newPiece.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: CGFloat(col-4)*squareSize).isActive = true //center of screen is to the top left of (4,6) on the board
+                newPiece.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(row-4-2)*squareSize).isActive = true //center of screen is to the top left of (4,6) on the board
+                newPiece.heightAnchor.constraint(equalToConstant: squareSize).isActive = true
+                newPiece.widthAnchor.constraint(equalToConstant: squareSize).isActive = true
+                newPiece.addTarget(self, action: #selector(self.chessPiecePushed(_:)), for: UIControlEvents.touchUpInside)
+                tempButtonRow.append(newPiece)
+                
+                let moveOption = option(row: row, col: col)
+                moveOption.translatesAutoresizingMaskIntoConstraints = false
+                moveOption.isHidden = true
+                moveOption.backgroundColor = UIColor.orange.withAlphaComponent(0.5) //changes how opaque/transparent the move options are
+                view.addSubview(moveOption)
+                moveOption.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: CGFloat(col-4)*squareSize).isActive = true //center of screen is to the top left of (4,6) on the board
+                moveOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(row-4-2)*squareSize).isActive = true //center of screen is to the top left of (4,6) on the board
+                moveOption.heightAnchor.constraint(equalToConstant: squareSize).isActive = true
+                moveOption.widthAnchor.constraint(equalToConstant: squareSize).isActive = true
+                moveOption.addTarget(self, action: #selector(self.moveOptionSelected(_:)), for: UIControlEvents.touchUpInside)
+                tempViewRow.append(moveOption)
+            }
+            pieceButtonArray.append(tempButtonRow)
+            moveOptions.append(tempViewRow)
+        }
+        //creates the promotion options
         cancelPromoteOption.isHidden = true
         knightPromoteOption.isHidden = true
         bishopPromoteOption.isHidden = true
@@ -93,22 +148,23 @@ class BoardViewController: UIViewController {
         bishopPromoteOption.setBackgroundImage(#imageLiteral(resourceName: "BW"), for: UIControlState.normal)
         rookPromoteOption.setBackgroundImage(#imageLiteral(resourceName: "RW"), for: UIControlState.normal)
         queenPromoteOption.setBackgroundImage(#imageLiteral(resourceName: "QW"), for: UIControlState.normal)
+        let height = CGFloat(Double(squareSize)*(-6)) - promoteOptionSize //this is the height of the top of the promotion options
         cancelPromoteOption.leadingAnchor.constraint(equalTo: margins.leadingAnchor).isActive = true
         cancelPromoteOption.trailingAnchor.constraint(equalTo: margins.trailingAnchor).isActive = true
         cancelPromoteOption.topAnchor.constraint(equalTo: margins.topAnchor).isActive = true
         cancelPromoteOption.bottomAnchor.constraint(equalTo: margins.bottomAnchor).isActive = true
         knightPromoteOption.heightAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
         knightPromoteOption.widthAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
-        knightPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(Double(squareSize)*(Double(-4 - 2) - 0.5))-promoteOptionSize).isActive = true
+        knightPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: height).isActive = true
         bishopPromoteOption.heightAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
         bishopPromoteOption.widthAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
-        bishopPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(Double(squareSize)*(Double(-4 - 2) - 0.5))-promoteOptionSize).isActive = true
+        bishopPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: height).isActive = true
         rookPromoteOption.heightAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
         rookPromoteOption.widthAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
-        rookPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(Double(squareSize)*(Double(-4 - 2) - 0.5))-promoteOptionSize).isActive = true
+        rookPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: height).isActive = true
         queenPromoteOption.heightAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
         queenPromoteOption.widthAnchor.constraint(equalToConstant: promoteOptionSize).isActive = true
-        queenPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(Double(squareSize)*(Double(-4 - 2) - 0.5))-promoteOptionSize).isActive = true
+        queenPromoteOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: height).isActive = true
         knightPromoteOption.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -2*promoteOptionSize).isActive = true
         bishopPromoteOption.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -promoteOptionSize).isActive = true
         rookPromoteOption.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: 0).isActive = true
@@ -118,58 +174,6 @@ class BoardViewController: UIViewController {
         bishopPromoteOption.addTarget(self, action: #selector(self.promoteBishop(_:)), for: UIControlEvents.touchUpInside)
         rookPromoteOption.addTarget(self, action: #selector(self.promoteRook(_:)), for: UIControlEvents.touchUpInside)
         queenPromoteOption.addTarget(self, action: #selector(self.promoteQueen(_:)), for: UIControlEvents.touchUpInside)
-        
-        let backButton = UIButton(frame: CGRect.zero)
-        backButton.translatesAutoresizingMaskIntoConstraints = false
-        backButton.setTitle("back", for: UIControlState.normal)
-        backButton.titleLabel?.font = UIFont(name: "Calibri", size: portraitHeight/10)
-        backButton.backgroundColor = UIColor.white
-        backButton.setTitleColor(UIColor.black, for: UIControlState.normal)
-        view.addSubview(backButton)
-        backButton.leadingAnchor.constraint(equalTo: margins.leadingAnchor, constant: portraitWidth/10).isActive = true
-        backButton.trailingAnchor.constraint(equalTo: margins.trailingAnchor, constant: -portraitWidth/10).isActive = true
-        backButton.topAnchor.constraint(equalTo: margins.bottomAnchor, constant: -portraitHeight/5).isActive = true
-        backButton.heightAnchor.constraint(equalToConstant: portraitHeight/10)
-        backButton.addTarget(self, action: #selector(self.backButtonPushed(_:)), for: UIControlEvents.touchUpInside)
-        
-        let boardImage: UIImageView = UIImageView(image: #imageLiteral(resourceName: "chessBoardImage"))
-        boardImage.transform = CGAffineTransform(scaleX: -1, y: 1)
-        boardImage.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(boardImage)
-        boardImage.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -4*squareSize).isActive = true
-        boardImage.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: (-4-2)*squareSize).isActive = true
-        boardImage.heightAnchor.constraint(equalToConstant: squareSize*8).isActive = true
-        boardImage.widthAnchor.constraint(equalToConstant: squareSize*8).isActive = true
-
-        for row in 0...7 {
-            var tempButtonRow = [UIButton]()
-            var tempViewRow = [UIButton]()
-            for col in 0...7 {
-                let newPiece = piece(row: row, col: col)
-                newPiece.translatesAutoresizingMaskIntoConstraints = false
-                view.addSubview(newPiece)
-                newPiece.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: CGFloat(col-4)*squareSize).isActive = true
-                newPiece.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(row-4-2)*squareSize).isActive = true
-                newPiece.heightAnchor.constraint(equalToConstant: squareSize).isActive = true
-                newPiece.widthAnchor.constraint(equalToConstant: squareSize).isActive = true
-                newPiece.addTarget(self, action: #selector(self.chessPiecePushed(_:)), for: UIControlEvents.touchUpInside)
-                tempButtonRow.append(newPiece)
-                
-                let moveOption = option(row: row, col: col)
-                moveOption.translatesAutoresizingMaskIntoConstraints = false
-                moveOption.isHidden = true
-                moveOption.backgroundColor = UIColor.orange.withAlphaComponent(0.5)
-                view.addSubview(moveOption)
-                moveOption.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: CGFloat(col-4)*squareSize).isActive = true
-                moveOption.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: CGFloat(row-4-2)*squareSize).isActive = true
-                moveOption.heightAnchor.constraint(equalToConstant: squareSize).isActive = true
-                moveOption.widthAnchor.constraint(equalToConstant: squareSize).isActive = true
-                moveOption.addTarget(self, action: #selector(self.moveOptionSelected(_:)), for: UIControlEvents.touchUpInside)
-                tempViewRow.append(moveOption)
-            }
-            pieceButtonArray.append(tempButtonRow)
-            moveOptions.append(tempViewRow)
-        }
         
         //setUpBoard()
         board = setUpBoardFromString(boardToSet: board, pieces: startPiecesString)
@@ -244,14 +248,19 @@ class BoardViewController: UIViewController {
     //MARK: Server Logic
     
     func updateBoardFromServerResponse() {
+        waiting = true
+        //check if can castle
         if (board.pieceArray[7][0] != "R" || board.pieceArray[7][4] != "K") {
             whiteCanCastleQueen = false
         }
         if (board.pieceArray[7][4] != "K" || board.pieceArray[7][7] != "R") {
             whiteCanCastleKing = false
         }
+        //this is the url which contains the code we want to run
         let url = "http://1718.lakeside-cs.org/Chess_Project_(better_than_checkers)/spaghetti.php"
+        // ok tbh the next few lines are mostly black magic...
         var components: URLComponents = URLComponents(string: url)!
+        //these variables in the query are simply taken from the variables stored on the client side
         components.queryItems = ["pieces": board.getString(useUnderscores: true), "castleWhiteKingside" : (whiteCanCastleKing ? "true" : "false"), "castleWhiteQueenside" : (whiteCanCastleQueen ? "true" : "false"), "castleBlackKingside" : (blackCanCastleKing ? "true" : "false"), "castleBlackQueenside" : (blackCanCastleQueen ? "true" : "false")].map { (arg) -> URLQueryItem in
             let (key, value) = arg
             return URLQueryItem(name: key, value: value)
@@ -268,14 +277,15 @@ class BoardViewController: UIViewController {
                         let Json = try JSONSerialization.jsonObject(with: content, options: .allowFragments) as AnyObject
                         let returnString: String? = Json as? String
                         if let unwrappedReturnString = returnString {
+                            //more black magic here
                             DispatchQueue.main.asyncAfter(deadline: .now()) {
                                 print(unwrappedReturnString)
                                 self.board = self.setUpBoardFromString(boardToSet: self.board, pieces: unwrappedReturnString)
                                 if (self.inCheck(boardToCheck: self.board, white: false)) {
-                                    self.playerWin()
+                                    self.gameOver(won: true)
                                 }
                                 else if (self.playerCheckmated(boardToCheck: self.board)) {
-                                    self.playerLoss()
+                                    self.gameOver(won: false)
                                 }
                                 else {
                                     self.refreshBoard()
@@ -300,7 +310,7 @@ class BoardViewController: UIViewController {
                 for col in 0...7 {
                     if (upperCaseCharacterSet.contains(board.pieceArray[row][col].unicodeScalars.first!)) {
                         if (getMoveArray(row: row, col: col).count != 0) {
-                            return false
+                            return false //return false if there are any pieces which have legal moves
                         }
                     }
                 }
@@ -319,6 +329,7 @@ class BoardViewController: UIViewController {
         return !inCheck(boardToCheck: tempBoard, white: true)
     }
     
+    //I am deeply sorry for this method... it has a bunch of junky hard-coding, but to be fair it is hard to eliminate all redundancy and magic numbers from this kind of method. The rules of chess are just resistant to programmatic encoding. I just did whatever made sense to me at the time. If I had to come back to this, I would probably just re-write it honestly
     func inCheck(boardToCheck: chessBoard, white: Bool) -> Bool {
         if let king = try? findKing(boardToCheck: boardToCheck, white: white) {
             //ROOKS
@@ -443,6 +454,7 @@ class BoardViewController: UIViewController {
         }
     }
     
+    //gets the square the king is on
     func findKing(boardToCheck: chessBoard, white: Bool) throws -> square {
         for row in 0...7 {
             for col in 0...7 {
@@ -454,6 +466,7 @@ class BoardViewController: UIViewController {
         throw ChessError.kingNotFound
     }
     
+    //checks if the board contains the given square
     func boardContainsSquare(row: Int, col: Int) -> Bool {
         return ((row >= 0) && (row <= 7) && (col >= 0) && (col <= 7))
     }
@@ -481,6 +494,7 @@ class BoardViewController: UIViewController {
         return [square]()
     }
     
+    //rip this is kind of redundant but it makes a lot of sense to do it this way
     func rookMoveArray(row: Int, col: Int) -> [square] {
         var moveArray: [square] = [square]()
         var colIterator = col
@@ -551,7 +565,7 @@ class BoardViewController: UIViewController {
         //the first four options are tall, the second four are wide
         //each grouping of four options starts in the NE quadrant and cycles counterclockwise
         for option in 0...7 {
-            var rowChange = 1 + (option / 4)
+            var rowChange = 1 + (option / 4) //sorry that this math is super confusing... basically its decoding the information from the index of the for loop
             var colChange = 2 - (option / 4)
             if ((option / 2) % 2 == 0) {
                 rowChange = -rowChange
@@ -648,6 +662,7 @@ class BoardViewController: UIViewController {
                 }
             }
         }
+        //dumb hard-coded castling stuff (I couldn't think of a more efficient way to do this)
         if (whiteCanCastleKing && !inCheck(boardToCheck: board, white: true) && board.pieceArray[7][5] == " " && board.pieceArray[7][6] == " " && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: 7, colToCheck: 5) && checkMoveLegal(rowFrom: row, colFrom: col, rowToCheck: 7, colToCheck: 6)) {
             moveArray.append(square(row: 7, col: 6))
         }
@@ -675,9 +690,9 @@ class BoardViewController: UIViewController {
     }
 
     func setUpBoardFromString(boardToSet: chessBoard, pieces: String) -> chessBoard{
-        for row in 0...7 {
+        for row in 0...7 { //iterates through board
             for col in 0...7 {
-                boardToSet.pieceArray[row][col] = pieces[pieces.index(pieces.startIndex, offsetBy: row * 8 + col)]
+                boardToSet.pieceArray[row][col] = pieces[pieces.index(pieces.startIndex, offsetBy: row * 8 + col)] //gets the piece at the specific row and col from the piece string
                 if (pieces[pieces.index(pieces.startIndex, offsetBy: row * 8 + col)] == "_") {
                     boardToSet.pieceArray[row][col] = " "
                 }
@@ -735,7 +750,6 @@ class BoardViewController: UIViewController {
     //MARK: Selecting square
     
     @IBAction func moveOptionSelected(_ sender: option) {
-        waiting = true
         clearOptions()
         if (board.pieceArray[rowSelected][colSelected] == "P") {
             if (sender.row == 0) {
@@ -753,8 +767,8 @@ class BoardViewController: UIViewController {
         }
         board.pieceArray[sender.row][sender.col] = board.pieceArray[rowSelected][colSelected]
         board.pieceArray[rowSelected][colSelected] = " "
-        if (sender.row == 7 && rowSelected == 7) {
-            if (whiteCanCastleKing && colSelected == 4 && sender.col == 6) {
+        if (sender.row == 7 && rowSelected == 7) { //if going from last row to last row
+            if (whiteCanCastleKing && colSelected == 4 && sender.col == 6) { //if trying to move king in a kingside castle
                 board.pieceArray[7][4] = " "
                 board.pieceArray[7][5] = "R"
                 board.pieceArray[7][6] = "K"
@@ -762,7 +776,7 @@ class BoardViewController: UIViewController {
                 whiteCanCastleQueen = false
                 whiteCanCastleKing = false
             }
-            if (whiteCanCastleQueen && colSelected == 4 && sender.col == 2) {
+            if (whiteCanCastleQueen && colSelected == 4 && sender.col == 2) { //if trying to move king in a queenside castle
                 board.pieceArray[7][0] = " "
                 board.pieceArray[7][1] = " "
                 board.pieceArray[7][2] = "K"
@@ -776,14 +790,15 @@ class BoardViewController: UIViewController {
         updateBoardFromServerResponse()
     }
     
+    //when a chess piece is pushed --> this is a lot simpler if debugmode didnt exist... it would essentially collapse down into the one statement of selecting the square if a couple conditions are met
     @IBAction func chessPiecePushed(_ sender: piece) {
         print("row: " + String((sender).rowCoord) + ", col: " + String((sender).colCoord))
-        if (!waiting && !pieceIsSelected) {
+        if (!pieceIsSelected) {
             if (DEBUGMODE && board.pieceArray[sender.rowCoord][sender.colCoord] != " ") {
                 selectSquare(row: (sender).rowCoord, col: (sender).colCoord)
             }
-            if (upperCaseCharacterSet.contains(board.pieceArray[sender.rowCoord][sender.colCoord].unicodeScalars.first!)) {
-                selectSquare(row: (sender).rowCoord, col: (sender).colCoord)
+            if (!waiting && upperCaseCharacterSet.contains(board.pieceArray[sender.rowCoord][sender.colCoord].unicodeScalars.first!)) {
+                selectSquare(row: (sender).rowCoord, col: (sender).colCoord) //this is the only line that can be triggered if debugmode is off
             }
         }
         else if (DEBUGMODE) {
@@ -855,15 +870,17 @@ class BoardViewController: UIViewController {
         view.addSubview(selectedBox)
         selectedBox.isHidden = false
         pieceIsSelected = true
-        selectedBox.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: squareSize*CGFloat((col-4))).isActive = true
-        selectedBox.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: squareSize*CGFloat((row-4-2))).isActive = true
+        selectedBox.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: squareSize*CGFloat((col-4))).isActive = true //center of screen is to the top left of (4,6) on the board
+        selectedBox.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: squareSize*CGFloat((row-6))).isActive = true //center of screen is to the top left of (4,6) on the board
         selectedBox.heightAnchor.constraint(equalToConstant: squareSize).isActive = true
         selectedBox.widthAnchor.constraint(equalToConstant: squareSize).isActive = true
         selectedBox.addTarget(self, action: #selector(self.clearSelectedBox(_:)), for: UIControlEvents.touchUpInside)
         pieceIsSelected = true
         rowSelected = row
         colSelected = col
-        displayOptions(row: row, col: col)
+        if (!waiting) {
+            displayOptions(row: row, col: col)
+        }
     }
     
     func displayOptions(row: Int, col: Int) {
@@ -893,25 +910,32 @@ class BoardViewController: UIViewController {
         {
             playerBox.text = "Playing as: " + (Auth.auth().currentUser?.email)!
         }
-        
-        playerBox.font = UIFont(name: "Helvetica", size: portraitHeight/36)
+        playerBox.adjustsFontSizeToFitWidth = true
+        playerBox.font = UIFont(name: "Helvetica", size: portraitHeight/36) //font size
         playerBox.textColor = UIColor.white
         playerBox.textAlignment = NSTextAlignment.center
         view.addSubview(playerBox)
-        playerBox.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/3).isActive = true
-        playerBox.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/3).isActive = true
-        playerBox.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight*2/5).isActive = true
+        playerBox.centerXAnchor.constraint(equalTo: margins.centerXAnchor).isActive = true
+        playerBox.widthAnchor.constraint(equalTo: margins.widthAnchor).isActive = true
+        playerBox.topAnchor.constraint(equalTo: margins.topAnchor, constant: portraitHeight/30).isActive = true //sets the height of the top of the player name
     }
     
     @IBAction func backButtonPushed(_ sender: UIButton) {
         performSegue(withIdentifier: "unwindFromBoardViewControllerToMainViewControllerID", sender: self)
     }
     
-    func playerWin() {
-        print("player win")
-    }
-    
-    func playerLoss() {
-        print("player loss")
+    func gameOver(won: Bool) {
+        waiting = true
+        let gameOverMessage = UILabel()
+        gameOverMessage.translatesAutoresizingMaskIntoConstraints = false
+        gameOverMessage.text = "You won!"
+        if (!won) {
+            gameOverMessage.text = "You lost..."
+        }
+        gameOverMessage.font = UIFont(name: "Helvetica", size: portraitHeight/15) //i like this font size
+        gameOverMessage.textColor = UIColor.white
+        view.addSubview(gameOverMessage)
+        gameOverMessage.centerXAnchor.constraint(equalTo: margins.centerXAnchor).isActive = true
+        gameOverMessage.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: portraitWidth/4).isActive = true //this places the game over message right below the board
     }
 }

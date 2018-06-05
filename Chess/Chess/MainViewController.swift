@@ -19,8 +19,6 @@ class MainViewController: UIViewController {
     let playerBox : UILabel = UILabel(frame:CGRect.zero)
     let loginButton: UIButton = UIButton(frame: CGRect.zero)
 
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         let user = Auth.auth().currentUser
@@ -45,57 +43,55 @@ class MainViewController: UIViewController {
         {
             playerBox.text = "Playing as: " + (user?.email)!
         }
-        
-        playerBox.font = UIFont(name: "Helvetica", size: portraitHeight/36)
+        playerBox.adjustsFontSizeToFitWidth = true
+        playerBox.font = UIFont(name: "Helvetica", size: portraitHeight/36) //I like the font this size relative to the screen
         playerBox.textColor = UIColor.white
         playerBox.textAlignment = NSTextAlignment.center
         view.addSubview(playerBox)
-        playerBox.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/3).isActive = true
-        playerBox.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/3).isActive = true
-        playerBox.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 - portraitHeight/8).isActive = true
-        playerBox.bottomAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 + portraitHeight/10).isActive = true
+        playerBox.centerXAnchor.constraint(equalTo: margins.centerXAnchor).isActive = true
+        playerBox.widthAnchor.constraint(equalTo: margins.widthAnchor).isActive = true
+        playerBox.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4).isActive = true //this number is the height above the center
         //Title box
         
         let titleBox: UILabel = UILabel(frame: CGRect.zero)
         titleBox.translatesAutoresizingMaskIntoConstraints = false
         titleBox.text = "Chess"
-        titleBox.font = UIFont(name: "Helvetica", size: portraitHeight/10)
+        titleBox.font = UIFont(name: "Helvetica", size: portraitHeight/10) //I like the font this size relative to the screen
         titleBox.textColor = UIColor.white
         titleBox.textAlignment = NSTextAlignment.center
         view.addSubview(titleBox)
-        titleBox.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/3).isActive = true
-        titleBox.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/3).isActive = true
-        titleBox.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4).isActive = true
-        titleBox.bottomAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/4 + portraitHeight/10).isActive = true
+        titleBox.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/3).isActive = true //I like it to be 2/3 of the width of the screen
+        titleBox.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/3).isActive = true //I like it to be 2/3 of the width of the screen
+        titleBox.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: -portraitHeight/5).isActive = true //the top should be a fifth of the portraitheight above the center
 
         //Button
         let playButton: UIButton = UIButton(frame: CGRect.zero)
         playButton.backgroundColor = UIColor.black
         playButton.setTitle("Play", for: UIControlState.normal)
-        playButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/12)
+        playButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/12) //I like the font this size relative to the screen
         playButton.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(playButton)
         
-        playButton.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/4).isActive = true
-        playButton.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/4).isActive = true
+        playButton.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/4).isActive = true //I like it to be 1/2 of the width of the screen
+        playButton.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/4).isActive = true //I like it to be 1/2 of the width of the screen
         playButton.topAnchor.constraint(equalTo: margins.centerYAnchor).isActive = true
-        playButton.heightAnchor.constraint(equalToConstant: portraitHeight/10)
+        playButton.heightAnchor.constraint(equalToConstant: portraitHeight/10) //the login button is 1/10 of the screen tall
         playButton.addTarget(self, action: #selector(MainViewController.playButtonPushed(_:)), for: UIControlEvents.touchUpInside)
         
         //how to play button
         let howToPlayButton: UIButton = UIButton(frame: CGRect.zero)
         view.addSubview(howToPlayButton)
         
-        howToPlayButton.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/4).isActive = true
-        howToPlayButton.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/4).isActive = true
-        howToPlayButton.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: +portraitHeight/8).isActive = true
+        howToPlayButton.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/4).isActive = true //the how to play button is half the width of the screen
+        howToPlayButton.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/4).isActive = true //the how to play button is half the width of the screen
+        howToPlayButton.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: +portraitHeight/8).isActive = true //the how to play button is an eighth of height of the screen above the center
         howToPlayButton.heightAnchor.constraint(equalToConstant: portraitHeight/16).isActive = true
         
         
         howToPlayButton.backgroundColor = UIColor.black
         howToPlayButton.setTitle("How To Play", for: UIControlState.normal)
-        howToPlayButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/24)
+        howToPlayButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/24) //I like the font this size relative to the screen
         howToPlayButton.translatesAutoresizingMaskIntoConstraints = false
         
         howToPlayButton.addTarget(self, action: #selector(self.howToPlayButtonPushed(_:)), for: .touchUpInside)
@@ -110,20 +106,17 @@ class MainViewController: UIViewController {
         {
             loginButton.setTitle("Logout", for: UIControlState.normal)
         }
-        loginButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/24)
+        loginButton.titleLabel?.font = UIFont(name: "Times New Roman", size: portraitHeight/24) //I like the font this size relative to the screen
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(loginButton)
         
-        loginButton.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/4).isActive = true
-        loginButton.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/4).isActive = true
-        loginButton.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: +portraitHeight/5).isActive = true
-        loginButton.heightAnchor.constraint(equalToConstant: portraitHeight/10)
+        loginButton.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -portraitWidth/4).isActive = true //the login button is half the screen wide
+        loginButton.trailingAnchor.constraint(equalTo: margins.centerXAnchor, constant: +portraitWidth/4).isActive = true //the login button is half the screen wide
+        loginButton.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: +portraitHeight/5).isActive = true //the login button is 1/5 of the screen height above the center
+        loginButton.heightAnchor.constraint(equalToConstant: portraitHeight/10) //the login button is 1/10 of the screen tall
         
         loginButton.addTarget(self, action: #selector(MainViewController.loginButtonPushed(_:)), for: UIControlEvents.touchUpInside)
-        
-
-
     }
     
     func fixThings() {
