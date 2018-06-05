@@ -95,6 +95,7 @@ class BoardViewController: UIViewController {
         view.addSubview(boardImage)
         boardImage.leadingAnchor.constraint(equalTo: margins.centerXAnchor, constant: -4*squareSize).isActive = true //center of screen is to the top left of (4,6) on the board
         boardImage.topAnchor.constraint(equalTo: margins.centerYAnchor, constant: (-4-2)*squareSize).isActive = true //center of screen is to the top left of (4,6) on the board
+        //chess boards are 8x8
         boardImage.heightAnchor.constraint(equalToConstant: squareSize*8).isActive = true
         boardImage.widthAnchor.constraint(equalToConstant: squareSize*8).isActive = true
 
@@ -248,7 +249,7 @@ class BoardViewController: UIViewController {
     //MARK: Server Logic
     
     func updateBoardFromServerResponse() {
-        waiting = true
+        waiting = true //stop the player from making moves
         //check if can castle
         if (board.pieceArray[7][0] != "R" || board.pieceArray[7][4] != "K") {
             whiteCanCastleQueen = false
@@ -281,16 +282,16 @@ class BoardViewController: UIViewController {
                             DispatchQueue.main.asyncAfter(deadline: .now()) {
                                 print(unwrappedReturnString)
                                 self.board = self.setUpBoardFromString(boardToSet: self.board, pieces: unwrappedReturnString)
-                                if (self.inCheck(boardToCheck: self.board, white: false)) {
+                                if (self.inCheck(boardToCheck: self.board, white: false)) { //if the board is returned such that the opponent is in check, then the player wins
                                     self.gameOver(won: true)
                                 }
-                                else if (self.playerCheckmated(boardToCheck: self.board)) {
+                                else if (self.playerCheckmated(boardToCheck: self.board)) { //if the player has been checkmated, then the player loses
                                     self.gameOver(won: false)
                                 }
-                                else {
+                                else { //only refresh the board if the game is still going
                                     self.refreshBoard()
                                 }
-                                self.waiting = false
+                                self.waiting = false //let the player make a move again
                             }
                         }
                     }

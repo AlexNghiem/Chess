@@ -119,6 +119,7 @@ class MainViewController: UIViewController {
         loginButton.addTarget(self, action: #selector(MainViewController.loginButtonPushed(_:)), for: UIControlEvents.touchUpInside)
     }
     
+    //this gets called whenever a change of users may be needed
     func fixThings() {
         if(Auth.auth().currentUser == nil)
         {
