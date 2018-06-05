@@ -2,11 +2,12 @@
 //  AppDelegate.swift
 //  Chess
 //
-//  Created by Alexander Nghiem on 2/2/18.
+//  Created by Alexander Nghiem on 3/29/18.
 //  Copyright © 2018 Alex, Justin, Eric. All rights reserved.
 //
 
 import UIKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        FirebaseApp.configure()
         return true
     }
 
